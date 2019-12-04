@@ -17,8 +17,6 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'Create new group' => '',
-    'Members' => '',
-    'Permissions' => '',
-    'Users can be assigned to different groups (e.g. teams, departments etc.) with specific standard spaces, group managers and permissions.' => '',
+    'Create new group' => 'Kreiraj novu grupu',
+    'Users can be assigned to different groups (e.g. teams, departments etc.) with specific standard spaces, group managers and permissions.' => 'Korisnici se mogu dodijeliti različitim grupama (npr. Timovima, odjelima itd.) s određenim standardnim prostorima, upraviteljima grupe i dozvolama.',
 ];

@@ -1,6 +1,6 @@
 <?php
 return array (
-  '<strong>Password</strong> changed!' => '',
-  'Login' => 'Belépés',
-  'Your password has been successfully changed!' => '',
+  '<strong>Password</strong> changed!' => '<strong>Jelszavad</strong> megváltozott!',
+  'Login' => 'Bejelentkezés',
+  'Your password has been successfully changed!' => 'A jelszavad sikeresen megváltoztatva!',
 );

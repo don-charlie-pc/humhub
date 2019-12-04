@@ -8,21 +8,43 @@
 
 namespace humhub\components;
 
-use Yii;
-use yii\base\Exception;
-use yii\base\Event;
-use yii\base\InvalidConfigException;
-use yii\helpers\FileHelper;
 use humhub\components\bootstrap\ModuleAutoLoader;
+use humhub\libs\BaseSettingsManager;
 use humhub\models\ModuleEnabled;
+use Yii;
+use yii\base\Component;
+use yii\base\Event;
+use yii\base\Exception;
+use yii\base\InvalidConfigException;
+use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 
 /**
  * ModuleManager handles all installed modules.
  *
  * @author luke
  */
-class ModuleManager extends \yii\base\Component
+class ModuleManager extends Component
 {
+    /**
+     * @event triggered before a module is enabled
+     */
+    const EVENT_BEFORE_MODULE_ENABLE = 'beforeModuleEnabled';
+
+    /**
+     * @event triggered after a module is enabled
+     */
+    const EVENT_AFTER_MODULE_ENABLE = 'afterModuleEnabled';
+
+    /**
+     * @event triggered before a module is disabled
+     */
+    const EVENT_BEFORE_MODULE_DISABLE = 'beforeModuleDisabled';
+
+    /**
+     * @event triggered after a module is disabled
+     */
+    const EVENT_AFTER_MODULE_DISABLE = 'afterModuleDisabled';
 
     /**
      * Create a backup on module folder deletion
@@ -67,22 +89,22 @@ class ModuleManager extends \yii\base\Component
             return;
         }
 
-        if (Yii::$app instanceof console\Application && !Yii::$app->isDatabaseInstalled()) {
+        if (!BaseSettingsManager::isDatabaseInstalled()) {
             $this->enabledModules = [];
         } else {
-            $this->enabledModules = \humhub\models\ModuleEnabled::getEnabledIds();
+            $this->enabledModules = ModuleEnabled::getEnabledIds();
         }
     }
 
     /**
      * Registers a module to the manager
-     * This is usally done by autostart.php in modules root folder.
+     * This is usually done by config.php in modules root folder.
+     * @see \humhub\components\bootstrap\ModuleAutoLoader::bootstrap
      *
-     * @param array $
-
-     * @throws Exception
+     * @param array $configs
+     * @throws InvalidConfigException
      */
-    public function registerBulk(Array $configs)
+    public function registerBulk(array $configs)
     {
         foreach ($configs as $basePath => $config) {
             $this->register($basePath, $config);
@@ -98,13 +120,14 @@ class ModuleManager extends \yii\base\Component
      */
     public function register($basePath, $config = null)
     {
-        if ($config === null && is_file($basePath . '/config.php')) {
-            $config = require($basePath . '/config.php');
+        $filename = $basePath . '/config.php';
+        if ($config === null && is_file($filename)) {
+            $config = require $filename;
         }
 
         // Check mandatory config options
         if (!isset($config['class']) || !isset($config['id'])) {
-            throw new InvalidConfigException("Module configuration requires an id and class attribute!");
+            throw new InvalidConfigException('Module configuration requires an id and class attribute: '.$basePath);
         }
 
         $isCoreModule = (isset($config['isCoreModule']) && $config['isCoreModule']);
@@ -134,7 +157,7 @@ class ModuleManager extends \yii\base\Component
 
         // Handle Submodules
         if (!isset($config['modules'])) {
-            $config['modules'] = array();
+            $config['modules'] = [];
         }
 
         if ($isCoreModule) {
@@ -148,12 +171,12 @@ class ModuleManager extends \yii\base\Component
 
         $moduleConfig = [
             'class' => $config['class'],
-            'modules' => $config['modules']
+            'modules' => $config['modules'],
         ];
 
         // Add config file values to module
         if (isset(Yii::$app->modules[$config['id']]) && is_array(Yii::$app->modules[$config['id']])) {
-            $moduleConfig = \yii\helpers\ArrayHelper::merge($moduleConfig, Yii::$app->modules[$config['id']]);
+            $moduleConfig = ArrayHelper::merge($moduleConfig, Yii::$app->modules[$config['id']]);
         }
 
         // Register Yii Module
@@ -181,8 +204,10 @@ class ModuleManager extends \yii\base\Component
      *
      * - includeCoreModules: boolean, return also core modules (default: false)
      * - returnClass: boolean, return classname instead of module object (default: false)
+     * - enabled: boolean, returns only enabled modules (core modules only when combined with `includeCoreModules`)
      *
      * @return array
+     * @throws Exception
      */
     public function getModules($options = [])
     {
@@ -193,6 +218,13 @@ class ModuleManager extends \yii\base\Component
             // Skip core modules
             if (!isset($options['includeCoreModules']) || $options['includeCoreModules'] === false) {
                 if (in_array($class, $this->coreModules)) {
+                    continue;
+                }
+            }
+
+
+            if (isset($options['enabled']) && $options['enabled'] === true) {
+                if(!in_array($class, $this->coreModules) && !in_array($id, $this->enabledModules)) {
                     continue;
                 }
             }
@@ -211,6 +243,20 @@ class ModuleManager extends \yii\base\Component
     }
 
     /**
+     * Returns all enabled modules and supportes further options as [[getModules()]].
+     *
+     * @param array $options
+     * @return array
+     * @throws Exception
+     * @since 1.3.10
+     */
+    public function getEnabledModules($options = [])
+    {
+        $options['enabled'] = true;
+        return $this->getModules($options);
+    }
+
+    /**
      * Checks if a moduleId exists, regardless it's activated or not
      *
      * @param string $id
@@ -222,10 +268,26 @@ class ModuleManager extends \yii\base\Component
     }
 
     /**
+     * Returns weather or not the given module id belongs to an core module.
+     *
+     * @return bool
+     * @since 1.3.8
+     * @throws Exception
+     */
+    public function isCoreModule($id)
+    {
+        if(!$this->hasModule($id)) {
+            return false;
+        }
+
+        return (in_array(get_class($this->getModule($id)), $this->coreModules));
+    }
+
+    /**
      * Returns a module instance by id
      *
      * @param string $id Module Id
-     * @return \yii\base\Module
+     * @return Module|object
      */
     public function getModule($id)
     {
@@ -240,7 +302,7 @@ class ModuleManager extends \yii\base\Component
             return Yii::createObject($class, [$id, Yii::$app]);
         }
 
-        throw new Exception("Could not find/load requested module: " . $id);
+        throw new Exception('Could not find/load requested module: ' . $id);
     }
 
     /**
@@ -254,7 +316,8 @@ class ModuleManager extends \yii\base\Component
     /**
      * Checks the module can removed
      *
-     * @param type $moduleId
+     * @param string $moduleId
+     * @return bool
      */
     public function canRemoveModule($moduleId)
     {
@@ -275,14 +338,17 @@ class ModuleManager extends \yii\base\Component
     /**
      * Removes a module
      *
-     * @param strng $id the module id
+     * @param string $moduleId
+     * @param bool $disableBeforeRemove
+     * @throws Exception
+     * @throws \yii\base\ErrorException
      */
     public function removeModule($moduleId, $disableBeforeRemove = true)
     {
         $module = $this->getModule($moduleId);
 
         if ($module == null) {
-            throw new Exception("Could not load module to remove!");
+            throw new Exception('Could not load module to remove!');
         }
 
         /**
@@ -296,14 +362,10 @@ class ModuleManager extends \yii\base\Component
          * Remove Folder
          */
         if ($this->createBackup) {
-            $moduleBackupFolder = Yii::getAlias("@runtime/module_backups");
-            if (!is_dir($moduleBackupFolder)) {
-                if (!@mkdir($moduleBackupFolder)) {
-                    throw new Exception("Could not create module backup folder!");
-                }
-            }
+            $moduleBackupFolder = Yii::getAlias('@runtime/module_backups');
+            FileHelper::createDirectory($moduleBackupFolder);
 
-            $backupFolderName = $moduleBackupFolder . DIRECTORY_SEPARATOR . $moduleId . "_" . time();
+            $backupFolderName = $moduleBackupFolder . DIRECTORY_SEPARATOR . $moduleId . '_' . time();
             $moduleBasePath = $module->getBasePath();
             FileHelper::copyDirectory($moduleBasePath, $backupFolderName);
             FileHelper::removeDirectory($moduleBasePath);
@@ -322,15 +384,16 @@ class ModuleManager extends \yii\base\Component
      */
     public function enable(Module $module)
     {
-        $moduleEnabled = ModuleEnabled::findOne(['module_id' => $module->id]);
-        if ($moduleEnabled == null) {
-            $moduleEnabled = new ModuleEnabled();
-            $moduleEnabled->module_id = $module->id;
-            $moduleEnabled->save();
+        $this->trigger(static::EVENT_BEFORE_MODULE_ENABLE, new ModuleEvent(['module' => $module]));
+
+        if (!ModuleEnabled::findOne(['module_id' => $module->id])) {
+            (new ModuleEnabled(['module_id' => $module->id]))->save();
         }
 
         $this->enabledModules[] = $module->id;
         $this->register($module->getBasePath());
+
+        $this->trigger(static::EVENT_AFTER_MODULE_ENABLE, new ModuleEvent(['module' => $module]));
     }
 
     public function enableModules($modules = [])
@@ -351,6 +414,8 @@ class ModuleManager extends \yii\base\Component
      */
     public function disable(Module $module)
     {
+        $this->trigger(static::EVENT_BEFORE_MODULE_DISABLE, new ModuleEvent(['module' => $module]));
+
         $moduleEnabled = ModuleEnabled::findOne(['module_id' => $module->id]);
         if ($moduleEnabled != null) {
             $moduleEnabled->delete();
@@ -360,17 +425,18 @@ class ModuleManager extends \yii\base\Component
             unset($this->enabledModules[$key]);
         }
 
-        Yii::$app->setModule($module->id, 'null');
+        Yii::$app->setModule($module->id, null);
+
+        $this->trigger(static::EVENT_AFTER_MODULE_DISABLE, new ModuleEvent(['module' => $module]));
     }
 
     public function disableModules($modules = [])
     {
         foreach ($modules as $module) {
             $module = ($module instanceof Module) ? $module : $this->getModule($module);
-            if($module != null) {
+            if ($module != null) {
                 $module->disable();
             }
         }
     }
-
 }

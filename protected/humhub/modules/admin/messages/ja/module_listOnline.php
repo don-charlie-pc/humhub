@@ -17,11 +17,10 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'No modules found!' => '',
-    'No purchased modules found!' => '',
-    'Register' => '',
-    'Third-party' => '',
-    'search for available modules online' => '',
     'Installed' => 'インストール済',
+    'No modules found!' => 'モジュールはありません',
+    'No purchased modules found!' => '購入したモジュールはありません',
+    'Register' => '登録',
     'Search' => '検索',
+    'search for available modules online' => 'オンライン上でモジュールを探す',
 ];

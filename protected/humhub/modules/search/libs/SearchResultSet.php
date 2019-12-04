@@ -22,7 +22,7 @@ class SearchResultSet
     /**
      * @var SearchResult[] the search rsults
      */
-    public $results = array();
+    public $results = [];
 
     /**
      * @var int number of total results
@@ -47,7 +47,7 @@ class SearchResultSet
      */
     public function getResultInstances()
     {
-        $instances = array();
+        $instances = [];
 
         foreach ($this->results as $result) {
             /** @var $modelClass ActiveRecord */
@@ -56,7 +56,7 @@ class SearchResultSet
             if ($instance !== null) {
                 $instances[] = $instance;
             } else {
-                Yii::error('Could not load search result ' . $result->model . " - " . $result->pk);
+                Yii::info('Could not load search result ' . $result->model . " - " . $result->pk, 'search');
             }
         }
 

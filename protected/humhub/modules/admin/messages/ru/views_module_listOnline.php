@@ -17,9 +17,9 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'Disclaimer' => '',
+    'Third-party' => '',
     '<strong>Modules</strong> directory' => '<strong>Директория</strong> модулей',
-    'Buy (%price%)' => 'Купить (% цена%)',
+    'Buy (%price%)' => 'Купить (%price%)',
     'Install' => 'Установить',
     'Installing module...' => 'Установить модуль...',
     'Latest compatible version:' => 'Последняя совместимая версия:',

@@ -8,7 +8,10 @@
 
 namespace humhub\components\console;
 
+use humhub\libs\BaseSettingsManager;
 use Yii;
+use yii\console\Exception;
+use yii\helpers\Url;
 
 /**
  * Description of Application
@@ -24,21 +27,22 @@ class Application extends \yii\console\Application
     const EVENT_ON_INIT = 'onInit';
 
     /**
+     * @var string|array the homepage url
+     */
+    private $_homeUrl = null;
+
+    /**
      * @inheritdoc
      */
     public function init()
     {
         if (version_compare(phpversion(), '5.6', '<')) {
-            throw new \yii\console\Exception('Installed PHP Version is too old! Required minimum version is PHP 5.6 (Installed: ' . phpversion() . ')');
+            throw new Exception('Installed PHP Version is too old! Required minimum version is PHP 5.6 (Installed: ' . phpversion() . ')');
         }
 
-        parent::init();
-        $this->trigger(self::EVENT_ON_INIT);
-
-        if ($this->isDatabaseInstalled()) {
+        if (BaseSettingsManager::isDatabaseInstalled()) {
             $baseUrl = Yii::$app->settings->get('baseUrl');
             if (!empty($baseUrl)) {
-
                 if (Yii::getAlias('@web', false) === false) {
                     Yii::setAlias('@web', $baseUrl);
                 }
@@ -61,6 +65,9 @@ class Application extends \yii\console\Application
                 $this->urlManager->hostInfo = $hostInfo;
             }
         }
+
+        parent::init();
+        $this->trigger(self::EVENT_ON_INIT);
     }
 
     /**
@@ -78,17 +85,25 @@ class Application extends \yii\console\Application
     }
 
     /**
-     * Checks if database is installed
-     *
-     * @return boolean is database installed/migrated
+     * @return string the homepage URL
      */
-    public function isDatabaseInstalled()
+    public function getHomeUrl()
     {
-        if (in_array('setting', Yii::$app->db->schema->getTableNames())) {
-            return true;
+        if ($this->_homeUrl === null) {
+            return Url::to(['/dashboard/dashboard']);
+        } elseif (is_array($this->_homeUrl)) {
+            return Url::to($this->_homeUrl);
+        } else {
+            return $this->_homeUrl;
         }
+    }
 
-        return false;
+    /**
+     * @param string|array $value the homepage URL
+     */
+    public function setHomeUrl($value)
+    {
+        $this->_homeUrl = $value;
     }
 
 }

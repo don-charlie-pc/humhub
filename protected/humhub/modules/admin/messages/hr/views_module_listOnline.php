@@ -17,14 +17,14 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    '<strong>Modules</strong> directory' => '',
-    'Buy (%price%)' => '',
-    'Disclaimer' => '',
-    'Install' => '',
-    'Installing module...' => '',
-    'Latest compatible version:' => '',
-    'Latest version:' => '',
-    'Licence Key:' => '',
-    'More info' => '',
-    'No compatible module version found!' => '',
+    'Third-party' => '',
+    '<strong>Modules</strong> directory' => '<strong>Moduli</strong> -direktorij',
+    'Buy (%price%)' => 'Kupi (%price%)',
+    'Install' => 'Instaliraj',
+    'Installing module...' => 'Instaliram modul...',
+    'Latest compatible version:' => 'Zadnja kompatibilna verzija:',
+    'Latest version:' => 'Zadnja verzija:',
+    'Licence Key:' => 'Licencni ključ:',
+    'More info' => 'Više info',
+    'No compatible module version found!' => 'Nisu pronađene kompatibilne verzije modula!',
 ];

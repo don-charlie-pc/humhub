@@ -17,8 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'Allows the user to add comments' => '',
-    'Can manage (e.g. archive, stick or delete) arbitrary content' => '',
-    'Create comment' => '',
-    'Manage content' => '',
+    'Can manage (e.g. archive, stick, move or delete) arbitrary content' => '',
+    'Allows the user to add comments' => 'Omogućuje korisniku dodavanje komentara',
+    'Create comment' => 'Kreriaj komentar',
+    'Manage content' => 'Upravljaj komentar',
 ];

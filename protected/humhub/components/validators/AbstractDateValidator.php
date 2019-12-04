@@ -2,7 +2,7 @@
 
 /**
  * @link https://www.humhub.org/
- * @copyright Copyright (c) 2017 HumHub GmbH & Co. KG
+ * @copyright Copyright (c) 2018 HumHub GmbH & Co. KG
  * @license https://www.humhub.com/licences
  */
 
@@ -18,7 +18,6 @@ use yii\validators\Validator;
  */
 abstract class AbstractDateValidator extends Validator
 {
-
     public $message;
 
     abstract public function dateValidation($timestamp);
@@ -28,7 +27,7 @@ abstract class AbstractDateValidator extends Validator
         $date = $model->$attribute;
         if (is_string($model->$attribute)) {
             $date = strtotime($model->$attribute);
-        } else if ($model->$attribute instanceof DateTime) {
+        } elseif ($model->$attribute instanceof DateTime) {
             $date = $model->$attribute->getTimestamp();
         }
 
@@ -36,5 +35,4 @@ abstract class AbstractDateValidator extends Validator
             $this->addError($model, $attribute, $this->message);
         }
     }
-
 }

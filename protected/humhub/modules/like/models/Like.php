@@ -2,7 +2,7 @@
 
 /**
  * @link https://www.humhub.org/
- * @copyright Copyright (c) 2015 HumHub GmbH & Co. KG
+ * @copyright Copyright (c) 2018 HumHub GmbH & Co. KG
  * @license https://www.humhub.com/licences
  */
 
@@ -26,7 +26,6 @@ use humhub\modules\like\notifications\NewLike;
  * @property string $updated_at
  * @property integer $updated_by
  *
- * @package humhub.modules_core.like.models
  * @since 0.5
  */
 class Like extends ContentAddonActiveRecord
@@ -52,9 +51,9 @@ class Like extends ContentAddonActiveRecord
     {
         return [
             [
-                'class' => \humhub\components\behaviors\PolymorphicRelation::className(),
+                'class' => \humhub\components\behaviors\PolymorphicRelation::class,
                 'mustBeInstanceOf' => [
-                    \yii\db\ActiveRecord::className(),
+                    \yii\db\ActiveRecord::class,
                 ]
             ]
         ];
@@ -65,10 +64,10 @@ class Like extends ContentAddonActiveRecord
      */
     public function rules()
     {
-        return array(
-            array(['object_model', 'object_id'], 'required'),
-            array(['id', 'object_id', 'target_user_id'], 'integer'),
-        );
+        return [
+            [['object_model', 'object_id'], 'required'],
+            [['id', 'object_id', 'target_user_id'], 'integer'],
+        ];
     }
 
     /**
@@ -80,7 +79,7 @@ class Like extends ContentAddonActiveRecord
         $cacheValue = Yii::$app->cache->get($cacheId);
 
         if ($cacheValue === false) {
-            $newCacheValue = Like::findAll(array('object_model' => $objectModel, 'object_id' => $objectId));
+            $newCacheValue = Like::findAll(['object_model' => $objectModel, 'object_id' => $objectId]);
             Yii::$app->cache->set($cacheId, $newCacheValue, Yii::$app->settings->get('cache.expireTime'));
             return $newCacheValue;
         } else {
@@ -98,9 +97,12 @@ class Like extends ContentAddonActiveRecord
         \humhub\modules\like\activities\Liked::instance()->about($this)->save();
 
         if ($this->getSource() instanceof ContentOwner && $this->getSource()->content->createdBy !== null) {
-            // Send notification
-            NewLike::instance()->from(Yii::$app->user->getIdentity())->about($this)->send($this->getSource()->content->createdBy);
+            // This is required for comments where $this->getSoruce()->createdBy contains the comment author.
+            $target = isset($this->getSource()->createdBy) ? $this->getSource()->createdBy : $this->getSource()->content->createdBy;
+            NewLike::instance()->from(Yii::$app->user->getIdentity())->about($this)->send($target);
         }
+
+        $this->automaticContentFollowing = Yii::$app->getModule('like')->autoFollowLikedContent;
 
         return parent::afterSave($insert, $changedAttributes);
     }

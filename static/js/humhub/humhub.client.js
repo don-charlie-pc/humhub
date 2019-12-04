@@ -16,18 +16,31 @@ humhub.module('client', function (module, require, $) {
         this.response = xhr.responseJSON || xhr.responseText;
         //Textstatus = "timeout", "error", "abort", "parsererror", "application"
         this.textStatus = textStatus;
-        this.dataType = dataType;
         this.xhr = xhr;
 
-        var responseType = this.header('content-type');
+        if (!dataType) {
+            var responseType = this.header('content-type');
+            if (responseType && responseType.indexOf('json') > -1) {
+                dataType = 'json';
+            } else if (responseType && responseType.indexOf('html') > -1) {
+                dataType = 'html';
+            } else if(!this.isAbort()){
+                console.error('unable to determine dataType from response, this may cause problems.');
+            }
+        }
+        this.dataType = dataType;
 
         // If we expect json and received json we merge the json result with our response object.
-        if ((!dataType || dataType === 'json') && responseType && responseType.indexOf('json') > -1) {
+        if (this.dataType === 'json') {
             $.extend(this, this.response);
-        } else if (dataType) {
+        } else if (this.dataType === 'html') {
             this[dataType] = this.response;
         }
     };
+
+    Response.prototype.isAbort = function () {
+        return this.textStatus == "abort";
+    }
     
     Response.prototype.header = function (key) {
         return this.xhr.getResponseHeader(key);
@@ -88,6 +101,13 @@ humhub.module('client', function (module, require, $) {
         } else if (cfg instanceof $.Event) {
             originalEvent = cfg;
             cfg = {};
+        } else if($form.url) {
+            // Create a post form
+            $form = $('<form>', {
+                action:  $form.url,
+                method: 'post'
+            });
+            $form.appendTo('body');
         }
 
         cfg = cfg || {};
@@ -169,8 +189,15 @@ humhub.module('client', function (module, require, $) {
         return ajax(url, cfg, originalEvent);
     };
 
-    var ajax = function (url, cfg, originalEvent) {
+    var json = function (url, cfg, originalEvent) {
+        return new Promise(function(resolve, reject) {
+            get(url,cfg, originalEvent).then(function(response) {
+              resolve(response.data);
+            }).catch(reject)
+        });
+    };
 
+    var ajax = function (url, cfg, originalEvent) {
         // support for ajax(url, event) and ajax(path, successhandler);
         if (cfg instanceof $.Event) {
             originalEvent = cfg;
@@ -190,9 +217,9 @@ humhub.module('client', function (module, require, $) {
             var errorHandler = cfg.error;
             var error = function (xhr, textStatus, errorThrown) {
                 var response = new Response(xhr, url, textStatus, cfg.dataType).setError(errorThrown);
-
                 if (response.status == 302) {
                     _redirect(xhr);
+                    return;
                 }
 
                 if (errorHandler && object.isFunction(errorHandler)) {
@@ -230,9 +257,6 @@ humhub.module('client', function (module, require, $) {
             cfg.success = success;
             cfg.error = error;
             cfg.url = url;
-
-            //Setting some default values
-            cfg.dataType = cfg.dataType || "json";
 
             $.ajax(cfg);
         });
@@ -318,6 +342,7 @@ humhub.module('client', function (module, require, $) {
         reload: reload,
         submit: submit,
         init: init,
+        json: json,
         //upload: upload,
         Response: Response
     });

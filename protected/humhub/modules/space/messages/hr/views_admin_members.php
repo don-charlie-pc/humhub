@@ -17,9 +17,9 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    '<strong>Manage</strong> members' => '',
-    'Actions' => '',
-    'Remove' => '',
-    'Role' => '',
-    'never' => '',
+    '-' => '',
+    '<strong>Manage</strong> members' => '<strong>Upravljaj</strong> članovima',
+    'Actions' => 'Akcije',
+    'Role' => 'Uloga',
+    'never' => 'nikada',
 ];

@@ -1,9 +1,574 @@
 HumHub Change Log
 =================
-1.2.4
+
+1.3.19 (Unreleased)
+--------------------------
+
+- Fix #3759: Allow individual file extensions (e.g. msg)
+- Fix #3147: Module related permissions are not properly removed on deactivate/uninstall
+- Fix #3740: Profile fieldtype Checkbox List does not show "other"
+- Fix #3484: Encoding issue in german space visibility translation
+- Fix #3717: Account deletion incomplete if related to an identity provider
+
+
+1.3.18 (November 22, 2019)
+--------------------------
+
+- Fix #3698: Approval by group manager broken
+- Enh: Set max signs of User tags to 250
+- Fix: https://github.com/humhub/humhub-modules-wiki/issues/103 Topic attachment fails with given topic instances
+- Fix #3366: Set max-width for stream entry image file attachments
+- Fix: `ContentContainerController::getAccess` uses `ContentContainerControllerAccess` also for global access
+- Fix: Global content does not allow guest access
+- Fix #3727 Bug with Bluebird and Firefox 71 breaking mentioning requests
+
+
+1.3.17  (October 17, 2019)
+--------------------------
+
+- Fix #3690: Rollback from broken version 2.8.6 to 2.8.1 of bower-asset/clipboard.js
+
+
+1.3.16  (October 17, 2019)
+--------------------------
+
+- Fix #3647: GroupID field is not translatable in Registration Form
+- Fix #3655: Fix CommentLink widget Comment class usage conflict
+- Fix #3638: Update Notification Causes System Warning
+- Fix #3512: Broken error handling if SQL mode cannot be switched 
+- Fix #3599: Removed HTML encode for FROM attribute of Email (@githubjeka)
+- Fix #3637: Allowed using apostrophe in filename (@githubjeka)
+- Fix #3602: Trim function for username (@githubjeka)
+
+
+1.3.15  (August 22, 2019)
 -------------------------
+
+- Fix #3587: New user tour broken on some template variants
+- Fix #3589: Reduced integrity check memory usage in Like/Comment module
+- Fix #3595: LDAP config file values ignored
+- Fix #3598: Removed Google+ default profile field
+- Fix #3552: Updated to Yii - AuthClient 2.2+ library
+- Fix #3588: OEmbed CSS class not provided
+- Fix #3609: LDAP paging control limits max. users
+- Fix #3618: Some LDAP CLI commands requires a authClientId parameter 
+- Fix #3625: If user is following a space of which he is also a member, it shows up twice under "my spaces"
+- Fix #3626: SimpleStream reloads unexpected
+
+
+1.3.14  (June 26, 2019)
+------------------------
+- Fix: LinkedIn API call to v1 deprecated use v2 (@Felli)
+- Fix #3531: File module Fil: isAssignedTo method broken
+- Fix: Added missing admin group title encodings
+- Enh: Added featured module flag to marketplace view
+- Fix: Directory stats progress color (@Felli)
+- Fix #2724: Edited post does not display the space on dashboard
+- Fix #3533: Responsive design issues
+- Fix #3471: Display of Date Time Column in excel with empty/false value
+- Fix #3581: Search form with GET causes repeated sticking of url parameters (@Bhoft)
+- Enh: Added configuration option to hide Activity sidebar widget on dashboard
+- Fix #3570: en-GB language code Datepicker 404
+- Fix #3584: "Array to string conversion" on some LDAP attributes
+- Fix #3437: Composer warning for bower-asset/jPlayer
+
+
+1.3.13  (May 3, 2019)
+----------------------
+- Enh: Added HomeUrl support to ConsoleApplication
+- Fix #2536: Incorrect log of "Attempt to steal file" due to faulty File::isAssignedTo() check
+- Fix: Wrong help block position in admin basic settings
+- Chng: Removed yiisoft/yii2-apidoc dependency
+- Enh: Double file extension check is now optional and disabled by default
+- Fix #3552: `humhub\modules\user\authclient\AuthAction:auth()` not compatible with `yii\authclient\AuthAction:auth()`
+- Fix #3545: OEmbed fetch limit ignored
+- Enh: Added `humhub\libs\RestrictedCallException`
+- Chng: Switched from [bootstrap-tour](https://github.com/sorich87/bootstrap-tour) to [bootstrap-tourist](https://github.com/IGreatlyDislikeJavascript/bootstrap-tourist) due to incompatibility to bootstrap v3.4.1
+- Enh: Added `humhub.modules.tour` module for handling tour logic
+- Fix: Added PHP 7.3 compatibility workaround for ZF2 ArrayObject
+- Fix #3513: Profile schema cache not refreshed after adding new profile field
+- Fix: Removed Codeception files from HumHub packages builds due to possible XSS flaw (thanks to Kağan Eğlence)
+- Fix #3534: Mark ID Attribute in LDAP settings as required
+- Fix #3662: Group picker encode issue
+
+
+1.3.12  (March 26, 2019)
+---------------------------
+- Enh: Use of new Richtext for About section
+- Chng: Force blank links in old markdown editor
+- Fix: Profile Markdown field files are not attached
+- Chng: Don't restrict`humhub\modules\file\components\FileManager::attach()` to `humhub\components\ActiveRecord`
+- Fix: Richtext preview new line backslash issue
+- Enh: Migrated LDAP features into own submodule
+- Enh: Added new LDAP command line tools
+- Fix #3347: Fixed searching members in space and users with white space in full name (Baleks)
+- Fix: Deleted Records are not correctly removed from the search index
+- Fix #3459: Notification counter increment after manual notification fetch
+- Fix: Notification count update does not respect notification group
+- Fix: Change email form is restricted to max 45 characters. Changed to 150 (current DB restriction)
+- Fix: Footer menu renders redundant `<li>` end tag.
+
+1.3.11  (March 06, 2019)
+---------------------------
+- Fix: Disabled module notification category visible in notification settings.
+- Enh: Added `ModuleManager::getEnabledModules()`
+- Enh: `LikeAsset` is now part of `AppAsset` and does not need further registration
+- Fix (CVE-2019-9093) and (CVE-2019-9094): Reflective XSS in file post upload and cfiles upload (thanks to **Rubal Jain** for testing and reporting)
+- Enh: Added further upload file name validation
+- Enh: Added `ContentContainerModuleManager::flushCache()`
+- Fix: Bootstrap modal blocks richtext prompt focus
+- Fix: Richtext images with dimension setting not attached
+- Fix: `Stream::renderEntry()` overwrite does not work
+- Fix: Removed markdown line breaks from richtext preview
+- Fix: WallEntry of global content throws error
+- Fix: `ActivityAsset` does not depend on `StreamAsset`
+- Fix: Uploaded png preview files lose transparency
+- Fix: Modal options `backdrop` and `keyboard` deactivation has no effect
+
+
+1.3.10  (February 22, 2019)
+---------------------------
+- Fix: Removed ContentTag logging in search update
+- Fix #2567 No results in directory search containing single quote ( ' )
+- Fix #3468 Private space stream contains public content filter 
+- Fix #3473 Captcha validation breaks invite by mail
+- Enh: `data-action-confirm` now works on non action based links in combination with `data-action-method`
+- Enh: `grunt test` now uses the composer codeception version instead of a global executable
+- Enh: `grunt test` supports an additional `--env` option in order to set the codeception environment
+- Fix: Absolute url generation in tests not working
+- Enh: Added `HumHubHelper:fetchinviteToken()` in order to fetch invite tokens from emails in functional tests
+- Fix: Added "utf8mb4" character set support to database requirements
+- Fix: Finnish language name in language dropdown
+
+
+1.3.9  (February 13, 2019)
+--------------------------
+
+- Fix: StreamSuppressedQuery with limit = 2 throws query not executed exception
+- Fix #3378: Update user in search index when group memberships changes
+- Fix: Space un-archived activity view path broken
+- Enh: Accepting module README.md files in 'docs' directory
+- Fix: Include user profile posts option in dashboard stream broken
+- Fix: Check SoftDeleted user state in ControllerAccess
+- Fix: Removed database charset configuration in dynamic config
+- Fix: User soft deletion membership cache overwrite
+- Fix #3422 Stream suppressed loading logic loads unnecessary stream entries
+- Fix: "Back to home" button in registration broken with user approvals and guest mode activated
+- Fix #1683 #553: Added link to show/edit users awaiting admin approval
+- Fix: TextFilterInput uses `keypress` event instead of `keydown`
+- Fix #3452: Soft deleted user remain in other users as friends
+- Fix #3170: Wrong cancel invitation mail handling
+- Enh: Added `humhub\modules\space\models\Membership::isCurrentUser()`
+- Enh: Added `humhub\widgets\Link::post()` for `data-method="POST` requests
+- Fix: Use `humhub\modules\user\components\ActiveQueryUser::active()` on UserPicker fillquery by default
+- Added `relativeUrl` to notification view parameter
+- Fix #3335: Queue migration broken on some database configurations
+- Enh: Added new admin setting "Include captcha in registration form"
+- Enh: Added contentTags to the search index
+
+
+1.3.8  (December 10, 2018)
+---------------------------
+
+- Fix #3359: Weekly summary e-mails are not sent in default configuration
+- Fix #3365: Legacy richtext emojis not parsed in richtext preview
+- Fix: Friendship button adds additional spaces
+- Fix: SpaceController::actionHome throws 403 Http error for guests
+- Enh: New `humhub\modules\user\components\User::EVENT_BEFORE_SWITCH_IDENTITY`
+- Fix: Administration menu item visible after user impersonation
+- Enh: Added PermissionManager findUsersByPermission feature
+
+
+1.3.7  (October 23, 2018)
+---------------------------
+
+- Enh: Added maximum username length & maximum/minimum space url length (rekollekt)
+- Fix: Error message during database installation
+- Enh: "Powered by" message handling by widget
+- Enh: Add less options for mail font url/family (@rekollekt)
+- Fix: Fixed typo in space (un-)archived activities
+- Enh: Removed ErrorEvent which will be removed in yii-queue 3.0 (@acs-ferreira)
+- Enh: Added config option to remove "user profile posts" entry from directory navigation
+- Fix #2912: Deleting single stream item does not reload stream
+- Fix: Updated blueimp/jQuery-File-Upload to 2.94.1
+
+
+1.3.6  (October 11, 2018)
+---------------------------
+
+- Fix: Richtext loses mark state
+- Fix: New comment scroll behavior not used in edit comment
+- Chng: Updated `humhub-prosemirror-richtext` to v1.0.12
+- Fix #3322: Disabled users still receive emails notifications
+
+
+1.3.5  (October 10, 2018)
+---------------------------
+
+- Fix: Serialization of notifications without originator fails
+- Fix: Hide unapproved member activities
+- Fix #3313: Unable to deny invitation to private space
+- Fix: Added missing `parent::init()` to `humhub\modules\stream\widgets\StreamViewer`
+- Fix: Added PHP GD extension to the requirements (docs and selftest)
+- Fix: Comment edit triggers new activity
+- Fix: Fixed typo from `MailSummary::INTERVAL_HOURY` to `MailSummary::INTERVAL_HOURLY`
+- Enh: Added `humhub.modules.ui.filter.TextInput` and related `humhub\modules\ui\filter\widgets\TextFilterInput`
+- Enh: Enable `data-action-keypress` by default
+- Enh: Added `preventDefault` argument to `humhub.modules.action.bindAction` to disable prevent default behaviour for action events
+- Fix: Fix bootstrap-datepicker.en.min.js 404 (Not Found)
+- Fix: Comment form files not cleared
+- Enh: Added `humhub\modules\file\models\isAssignedTo($record)` argument in order to check if a File is attached to a specific record
+- Fix: rich-text mobile view wrong min-height calculation
+- Fix #3314: layout container width differences
+- Fix #3315: Exception on first login with ldap
+- Fix comment scroll overflows button
+- Fix widgetAction events case issue
+- Added `humhub.modules.util.string.capitalizeFirstLetter` and `lowerCaseFirstLetter`
+
+
+1.3.4  (September 25, 2018)
+---------------------------
+
+- Fix: Theme parent lookup cache causes installer crash
+
+
+1.3.3  (September 24, 2018)
+---------------------------
+
+- Fix: img overflow in markdown view
+- Enh: Added console command to list and change themes
+- Enh: Improved theme parent lookup performance
+- Enh: Added auto file attachment in `humhub\modules\content\widgets\richtext\ProsemirrorRichTextProcessor`
+- Fix: z-index issue with fixed richtext menu
+- Fix #3294: space picker encoding
+- Chng: Prevent `ActiveRecord::save()` call in `humhub\modules\file\components\FileManager::attach` 
+- Fix: Added additional notification validation
+- Fix: Notification previews contains new line
+- Enh: Allow urls in array form in homeUrl configuration
+- Fix: Javascript `humhub.modules.util.object.extend` not working on older Safari version
+- Enh: Enable usage of `humhub\modules\content\widgets\PermaLink` outside of `humhub.modules.content.Content` components.
+- Fix #3302 smiley are not render into last activity module and email 
+- Fix: Space head count includes disabled user
+- Fix: Broken picker image alignment (acs-ferreira)
+- Fix: File handling in upgrade path between 1.0.x and 1.3.x 
+- Chng: Updated `humhub-prosemirror-richtext` to v1.0.10
+- Fix: File handling in upgrade path between 1.0.x and 1.3.x 
+
+
+1.3.2  (September 4, 2018)
+--------------------------
+
+- Fix #3241: Profile header space count invalid
+- Fix: Disabled Notification E-Mails for installation sample contents
+- Fix: No e-mail summary immediately after installation
+- Enh: Added queuing for search updates of commments
+- Enh: Added queue clear option at Administration - Information
+- Enh: Improved support of languages unsupported Yii2 
+- Enh: Added Amharic language support
+- Enh: Added Finnish language support
+- Enh: Added dashboard warning for admins if cron jobs not working
+- Fix: Queue worker problem with spaces in PHP binary path
+- Fix: Comment buttons overlap editor text
+- Enh: Added windows support for grunt tasks
+- Enh: Added `grunt test-server` and `grunt test`
+- Chng: `humhub\modules\content\models\Content` now implements `humhub\modules\content\interfaces\ContentOwner`
+- Fix: Target container not available in `humhub\modules\content\components\ContentActiveRecord:afterMove()`
+- Chng: `humhub\modules\topic\models\Topic::attach` now accepts `humhub\modules\content\interfaces\ContentOwner` instances
+- Fix: Richtext without focusMenu on small devices overlaps previous sibling
+- Enh: Added random default color to `humhub\modules\ui\form\widgets\ColorPicker`
+- Chng: `humhub\modules\content\models\ContentTag:deleteAll()` and `humhub\modules\content\models\ContentTag:findAll()` now respect the tag type condition by default- Fix: Space admin user remove broken
+- Fix: Space admin user remove broken
+- Fix: Invalid "Member since" date in space administration
+- Fix: Suprressed stream entry button not rendered.
+- Fix: Author stream filter not working.
+- Chng: Use of relative urls in richtext files/images
+- Fix: Permalink better handling of deleted content
+- Fix: Activity exception on integrity check
+- Fix: Ensure profile field "internal name" contains at least one character
+- Fix: Do not allow user self deletion via admin section
+- Fix: Refactored ActiveQueryContent::contentTag method, added method parameter
+- Fix: Richtext prompt not removed on pjax load
+- Enh: Added `humhub\modules\content\widgets\richtext\ProsemirrorRichText::parseOutput` for pre render parsing
+- Enh: Added `humhub.modules.file.getFileUrl` and `humhub.modules.file.filterFileUrl` for file guid based url handling
+- Fix: `humhub\modules\space\modules\manage\components\Controller` only accessible by system admins
+- Enh: Added scheme parameter to Content::getUrl method
+- Enh: Added `ui.richtext.prosemirror.config.link.validate` to intercept link input validation
+- Chng: Updated `humhub.prosemirror` dependency to 1.0.9
+
+
+1.3.1  (August 7, 2018)
+-----------------------
+
+> Warning: Please read the [Update Guide](http://docs.humhub.org/admin-updating-130.html) before updating from 1.2.x!
+
+> Note: A full list of changes is available here: [Changelog](https://github.com/humhub/humhub/blob/v1.3.1/protected/humhub/docs/CHANGELOG.md)
+
+- Fix: Complete table cache flush on profile field update
+- Fix: Improved handling of inconsistent notifications
+- Fix: Vietnamese translation syntax error
+
+
+1.3.0  (August 3, 2018)
+-----------------------
+
+> Warning: Please read the [Update Guide](http://docs.humhub.org/admin-updating-130.html) before updating!
+
+- Enh: Added `PolymorphicRelation::strict` to throw exceptions when accessing invalid polymorphic relations
+- Fix: Mail summaries not correctly triggered by cron
+- Fix: Click to topics lead on streams without topic filter throws javascript error. (https://github.com/humhub/humhub-modules-polls/issues/49)
+- Fix: Existing files may cause NULL pointer exception
+- Fix: Newly created profile fields cannot be updated
+- Enh: Added `AbstractRichTextEditor::layout` in order to change richtext style
+- Enh: Added `block` type RichText for non focus menu style
+
+
+1.3.0-beta.3  (July 30, 2018)
+-----------------------------
+
+- Fix: prevent user serialization for SocialActivity
+- Fix: wrong return value for `Content::move()`
+- Fix: space archive activity wrong originator assignment
+- Fix: suppress "unable to determine dataType" error for aborted xhr requests
+- Enh: added `FunctionalTester::loginBySpaceUserGroup()` and `FunctionalTest::assertSpaceAccessStatus()` for ACL testing
+- Fix #2721 delete space button not visible for system admin
+- Enh: added `humhub\modules\space\behaviors\SpaceModelMembership::canDelete()`
+- Fix #3221: Popover Space title "&" to "&amp;"
+- Fix invalid translation syntax used in croatian language
+- Enh added highligh.js as ui addition
+- Fix: ui.addition.applyTo with filter ignores first filter index
+- Fix: introduction tour not working
+- Chng: Moved static js dependencies from `static/resources` into `static/js`
+- Fix: Comment edit cancel edit context item not shown
+- Fix  #2700: Prevent GroupManager access to system admin group management
+- Enh: Styled user deletion view
+- Fixed: Space and User Admin Filterbar padding
+- Fix: Source serialization of Notification ActiveJob
+- Enh: Added 'requireSource' & 'requireOriginator' flags in SocialActivities
+
+
+1.3.0-beta.2  (July 18, 2018)
+-----------------------------
+
+Please read the [Update Guide](http://docs.humhub.org/beta/admin-updating-130.html) before updating!
+
+> If you're using the sources directly from GitHub, you need to build the required assets manually. Please see the chapter [Build production assets](http://docs.humhub.org/dev-environment.html#build-production-assets) for more details.
+
+- Enh: Added CounterSet Widget to handle Space/Profile header statistic counts
+- Fix: UI addition mutation observer interfering with new rich-text mutation logic
+- Fix: ThemeLoader publishes assets on CLI requests
+- Enh: Add possibility to delete an invitation [#2980](https://github.com/humhub/humhub/issues/2980)
+- Enh: Moved search index tasks (add, update & delete) into asynchronous tasks
+- Enh: Added search index rebuild button
+- Fix #3200: wall stream scroll not working after single entry load request
+- Fix added missing required validation of target space for move content feature
+- Enh: Added `humhub.modules.stream.StreamState.firstRequest` in order to determine the initial request
+- Fix #3204: invalid russian translation in module overview
+- Fix #3169: post markdown not stripped in mails and activities
+- Fix #3157: invalid use of relative space target link in MailContentEntry widget 
+- Fix force invite not working on space creation
+- Enh: Enable invite all instead of force membership in case force invite checkbox is not selected
+- Fix: prevent MembersAdded activity when using force space membership
+- Enh: added `humhub.modules.ui.picker.Picker.disable()` in order to disable/enable userpicker fields
+- Enh: topic labels now redirect to space stream with active topic filter if clicked outside of space stream
+- Fix: #3123: unbalanced html tags leads to broken comment after load more
+- Fix: #3211: escaped html rendered on space list modal
+- Fix: invalid userpicker translation syntax in czech language
+- Fix: added missing layout-snippet-container class in space and profile layout
+- Fix: move profile content not possible
+- Fix: Stream wall scroll event not detached on pjax call
+- Fix: Error thrown for empty url links in `humhub\libs\Markdown` when used in console environment
+- Fix: UserUrlRule double User model import
+- Fix: Skip soft delete validation
+- Fix: Added user dn to ldap attributes on login
+- Enh: Added Twig template engine for usage in modules
+- Enh: Added id data attribute on contentcontainer links
+- Fix: Wrong permission check on force invite check
+- Fix: Space homepage doesn't allow custom pages on first position
+- Enh: Added integrity check for notification originator
+- Enh: Use of new richtext version 1.0.4 see https://github.com/humhub/humhub-prosemirror/blob/master/docs/CHANGELOG.md 
+- Enh: Added max-height for post/comment/edit richtext
+- Enh: Richtext style enhancements (dashed selection)
+- Fix: Upload preview for comments not cleared after submit
+- Fix: Profile/Space image upload not working after full page reloads
+- Fix: File upload errors not handled by richtext
+- Enh: Removed built and compressed assets from GitHub sources
+
+
+1.3.0-beta.1  (July 4, 2018)
+----------------------------
+
+Please read the [Update Guide](http://docs.humhub.org/beta/admin-updating-130.html) before updating!
+
+- Enh: Added file search indexing
+- Enh: Updated composer.json (acs-ferreira)
+- Chg: Switched from Composer FXP plugin to Asset Packagist repository
+- Enh: Committed composer.lock
+- Enh: Refactored ContentContainer Controller
+- Chg: Added ContentContainer ModuleManager, instead of individual handling (Space/User)
+- Fix: Rebind LDAP connection after successful login with administrative user
+- Enh: Make utf8_mb4 as default database charset
+- Enh: Moved queueing into own submodule and updated to yii2/queue extension
+- Enh: Added user soft deletion without contributions
+- Enh: Moved user deletion into asynchronous tasks
+- Enh: Improved user grid view design (Administration, User Approval, Space Members)
+- Enh: Moved SyncUsers (LDAP) and session table cleanup handling into ActiveJob
+- Enh: Added Push live module driver using Redis and Node.JS
+- Enh: Added tooltip option to space Image widget.
+- Enh: Added `humhub.client.json` javascript util for directly receiving json instead of a Response object.
+- Enh: Added `humhub.file.Upload.run()` for triggering the upload of the Upload widget.
+- Chg: Moved `humhub\widgets\RichText` to `humhub\modules\content\widgets\richtext\RichText`
+- Chg: Moved `humhub\widgets\RichTextField` to `humhub\modules\content\widgets\richtext\RichTextField`
+- Enh: Added rich text abstraction by means of configuration parameter `richText`
+- Enh: Added `humhub\modules\content\widgets\richtext\ProsemirrorRichText` as default rich text.
+- Enh: Added `humhub.oembed` js module for loading oembed content
+- Enh: Added `RichText::preview()` helper for minimal rich text output
+- Enh: Added `RichText::output()` helper for rendering the richtext
+- Enh: Added `RichText::postProcess()` for post-processing rich text content (mentionings/oembed etc.)
+- Enh: Added `content` module setting `Module::$maxOembeds` for setting the maximim amount of oembeds in a richtext.
+- Chg: Deprecate `humhub\modules\user\models\Mentioning::parse()` and in favor of `humhub\modules\content\widgets\richtext\RichText::postProcess()`
+- Enh: Added `humhub.user.getLocale()` javascript helper for checking the user locale on client side
+- Enh: Added `humhub\widgets\InputWidget::getValue()` for determining the field value
+- Enh: Added `humhub.client.json` for directly receiving the json result instead of a response wrapper object
+- Enh: Added option ContentContainerController to restrict container type
+- Enh: Ensure valid permalinks when URL rewriting is enabled
+- Fix: Birthday field refactoring (@danielkesselberg)
+- Enh #2811: Added option to resend invites (@danielkesselberg)
+- Enh: Added current database name to the "Administration -> Information -> Database" (githubjeka)
+- Chg: Depreciated Instagram OAuthClient & removed (@Felli)
+- Enh: Added random default space color on creation
+- Enh: Updated to Yii 2.0.14.2
+- Chg: Reduced email length to 150 chars to support utf8mb4 charset 
+- Enh: Added UI core module to group UI components
+- Enh: Added new IconPicker form field
+- Chg: Moved form widgets from `humhub\widgets` to `humhub\modules\ui\form\widgets` (added compatibility layer)
+- Enh: Added surpressed e-mail addresses configuration variable
+- Chg: `Create a new one.` to `Forgot your password?` (@Felli)
+- Enh/Fix: Cache Handling + File Preview Fix (@Felli)
+- Enh: BaseSettingsManager allow to bunch delete settings with prefix
+- Chg: Migrated view and theme components to  `humhub\modules\ui\view` package
+- Enh: Improved Theme component
+- Enh: Added notification for MembershipSpace by role member changes (@githubjeka)
+- Enh: Added Theme cascading to reduce view overwrites
+- Enh: Automatic theme stylesheet loading including parent theme stylesheets
+- Chg: Moved OpenSans font to core assets
+- Chg: Renamed information cronjob section to Background jobs and added queue status
+- Chg: MySQL queue is now the default job queuing driver
+- Enh: Add steps to using Facebook Oauth (@Felli)
+- Enh: Added css `footer-nav` class for footer navigation
+- Enh: Added Pin/Archived/Public wallentry icons
+- Enh: Added move content behavior by means of a `humhub\modules\content\models\Movable` interface
+- Enh: Added sortOrder utility `humhub\libs\Sort` 
+- Enh: Added `humhub\modules\content\helpers\ContentContainerHelper` util with `ContentContainerHelper::getCurrent()`
+- Enh: Added `humhub\modules\stream\helpers\StreamHelper` util with `StreamHelper::createUrl()`
+- Chg: Shifted activity stream logic to `humhub\modules\activity\actions\ActivityStreamAction` and `humhub\modules\activity\controllers\StreamController`
+- Chg: Added activity stream action `humhub\modules\activity\actions\ActivityStreamAction`
+- Enh: Added `humhub\modules\stream\models\WallStreamQuery` class used for wall streams e.g. Space content stream
+- Enh: Added `ui` core module
+- Enh: Added abstract ui filters used for dynamic/extendable filter views
+- Chg: New Stream and Stream Filter API
+- Enh: Added `topic` content filter concept with stream integration
+
+
+1.2.8 (July 3, 2018)
+--------------------
+
+- Enh: Added user email to javascript user config
+- Fix: Module Assets are not republished after module update
+- Enh: Added `humhub\components\ModuleManager::EVENT_BEFORE_MODULE_ENABLE` and `humhub\components\ModuleManager::EVENT_AFTER_MODULE_ENABLE` events
+- Enh: Added `humhub\components\ModuleManager::EVENT_BEFORE_MODULE_DISABLE` and `humhub\components\ModuleManager::EVENT_AFTER_MODULE_DISABLE` events
+- Fix: Improved ZendLucence driver error handling
+- Fix #3148: Upload space picture dose not use file size setting in HumHub (acs-ferreira)
+- Fix: Incorrect last visit date shown in space admin pending members view (acs-ferreira)
+- Enh: Allow enable/disable modules by CLI
+- Enh: Added UTC only timezone in server timezone dropdown
+- Fix #3176: Integrity checker removes modules default state
+- Enh: Updated translations
+
+
+1.2.7 (May 23, 2018)
+--------------------
+
+- Fixed empty modal dialog response issue
+- Fix #3146 invalid bootstrap.min.css link in installer
+- Enh: Load `humhub\modules\content\models\ContentTagAddition` model in `humhub\modules\content\models\ContentTag::load()`
+- Enh: Auto save `humhub\modules\content\models\ContentTagAddition` within `humhub\modules\content\models\ContentTag::afterSave()`
+- Enh: Added `humhub\modules\content\components\ContentActiveRecord::isOwner()` to check the ownership of a content
+- Enh: Make directory access configurable by `humhub\modules\directory\Module::active`, `humhub\modules\directory\Module::guestAccess`
+- Enh: Added `humhub\modules\directory\permissions\AccessDirectory` permission for group level directory access
+- Fixed `User `namespace issue in `humhub\modules\user\components\BaseAccountController`
+- Chg: Added footer menu to account menu on small display resolutions
+
+
+1.2.6  (May 14, 2018)
+-----------------------
+
+When you are using a custom theme, you may need to add the newly introduced footer navigation to your overwritten view files.
+You can find a full list of the view changes here: https://github.com/humhub/humhub/commit/a1815fb61d83619ce9ca40166800b8c5dcb9d539
+
+- Fix #3108: Fixed cronjob examples with leading zero (acs-ferreira)
+- Fix: Memory leak in activity mail summary processor cron
+- Fix: With enabled guest mode BaseAccountController does not redirect to login page
+- Enh: Added footer navigation - FooterMenu widget
+- Enh: Added HForm class events EVENT_AFTER_INIT and EVENT_BEFORE_RENDER
+- Enh: Updated translations
+
+
+1.2.5  (April 11, 2018)
+-----------------------
+
+When you customized or used the createCVS method of PendingRegistrationsController please 
+migrate your code to SpreadsheetExport. PHPOffice is replaced by PHPSpreadsheet.
+
+- Enh: Added BaseURL setting protocol scheme validation
+- Fix #2849: ActiveQueryContent doesn't find public profile content when guest access is enabled
+- Enh: Fixed username alignment in comments (@githubjeka)
+- Enh: More readable WallEntryAddon links (@githubjeka)
+- Fix: Documentation grammar fixes (@Felli)
+- Fix: Let's Encrypt ACME Error (@Felli)
+- Fix: Typo in password recovery (@acs-ferreira)
+- Fix: Profile posts of friends not appears on dashboard
+- Fix #2745: Yii2 2.0.13 will break the admin interface
+- Enh: Allow auto detection of response dataType
+- Fix #2947: Allow json success result on modalSubmit
+- Enh: Disabled automatic content following on likes by default
+- Enh: Improved IntegrityChecker memory usage
+- Chg: `PendingRegistrationsController->createCVS` removed
+- Fix: Stream image preview size not changeable
+- Fix: Increased maximum e-mail address length from 45 characters to 254
+- Fix: Group member search by firstname/lastname
+- Enh: Added Slovene language
+- Enh: Added Croatian language
+- Fix: User approval, lastname field is shown twice to admins
+- Fix: User model namespace issue in `humhub/modules/user/components/UrlRule`
+- Enh: Raised notification over view pagination size to 20
+- Enh: Added `humhub/modules/space/models/Module::flushCache()` and `humhub/modules/space/behaviours/SpaceModelModules::flushCache()` in order to flush the space module cache
+- Enh: Added further `FunctionalTester` utilities
+- Enh: Added Norwegian Nynorsk language
+- Fix #3009: Change the Space URL raises 404
+
+1.2.4  (December 13, 2017)
+--------------------------
+
+- Enh: Translation updates
 - Fix: Added `ManageSpaces` and SystemAdmin check to `UserGroupAccessValidator`.
 - Fix: Only include content with `stream_channel = default` into spacechooser update count.
+- Enh: Add LinkedIn auth to login. (Felli)
+- Enh: Add Twitter auth to login. (Felli)
+- Enh: Add Instagram auth to login. (Felli)
+- Enh: Add Twitter, LinkedIn & Instagram auth to docs (Felli)
+- Enh: Make lucene search term limit configurable via `ZendLuceneSearch::$searchItemLimit`.
+- Fix: Empty stream message between friends
+- Enh: Improve composer-asset-plugin config (cebe)
+- Enh: Added a link to the permalink from the ago text (benklop)
+- Enh: Added directory group description (githubjeka)
+- Enh: Added configuration option to include user profile posts in dashboard without following
+- Fix: User profile sidebar disappered
+- Fix: Like notification for comments not working
+- Fix: Add example users to default Users group
+- Fix #2851: getting model attribute value using Html::getAttributeValue()
+- Fix #2844: Directory member search broken on page 2
+- Fix #2702: Disable content search for guest users due to space visibility
+- Fix #2806: Register process broken on some environments (Felli)
 
 1.2.3  (October 23, 2017)
 -------------------------

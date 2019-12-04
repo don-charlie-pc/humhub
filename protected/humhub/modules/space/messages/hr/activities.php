@@ -17,8 +17,12 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'Space member joined' => '',
-    'Space member left' => '',
-    'Whenever a member leaves one of your spaces.' => '',
-    'Whenever a new member joined one of your spaces.' => '',
+    'Space has been archived' => '',
+    'Space has been unarchived' => '',
+    'Whenever a space is archived.' => '',
+    'Whenever a space is unarchived.' => '',
+    'Space member joined' => 'Pridružio se član prostora',
+    'Space member left' => 'Član prostora je otišao',
+    'Whenever a member leaves one of your spaces.' => 'Kad god član napušta jedan od vaših prostora.',
+    'Whenever a new member joined one of your spaces.' => 'Kad god se novi član pridruži jednom od vaših prostora.',
 ];

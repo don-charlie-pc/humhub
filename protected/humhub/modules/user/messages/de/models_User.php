@@ -1,13 +1,13 @@
 <?php
 return array (
-  'Auth Mode' => 'Authentifizierungs-Verfahren',
+  'Auth Mode' => 'Auth-Verfahren',
   'Created at' => 'Erstellt am',
   'Created by' => 'Erstellt durch',
   'Default Space' => 'Standard-Space',
   'Description' => 'Beschreibung',
   'Email' => 'E-Mail Adresse',
   'Language' => 'Sprache',
-  'Last Login' => 'Zuletzt angemeldet am',
+  'Last Login' => 'Letzter Login',
   'Manager' => 'Manager',
   'Name' => 'Name',
   'Show At Directory' => 'Im Verzeichnis anzeigen',
@@ -16,8 +16,8 @@ return array (
   'Space ID' => 'Space Id',
   'Status' => 'Status',
   'Tags' => 'Tags',
-  'Updated at' => 'Zuletzt geändert am',
-  'Updated by' => 'Zuletzt geändert durch',
+  'Updated at' => 'Geändert am',
+  'Updated by' => 'Geändert durch',
   'Username' => 'Benutzername',
   'Visibility' => 'Sichtbarkeit',
 );

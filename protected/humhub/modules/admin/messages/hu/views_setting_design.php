@@ -1,10 +1,10 @@
 <?php
 return array (
-  'Alphabetical' => '',
-  'Auto format based on user language - Example: {example}' => '',
-  'Firstname Lastname (e.g. John Doe)' => '',
-  'Fixed format (mm/dd/yyyy) - Example: {example}' => '',
-  'Last visit' => '',
+  'Alphabetical' => 'ABC sorrend',
+  'Auto format based on user language - Example: {example}' => 'Automatikus formátum a felhasználói nyelv alapján - Példa: {example}',
+  'Firstname Lastname (e.g. John Doe)' => 'Keresztnév/utónév (például John Doe)',
+  'Fixed format (dd/mm/yyyy) - Example: {example}' => 'Fix formátum (nap/hónap/év) - Példa: {example}',
+  'Last visit' => 'Utolsó látogatás',
   'Save' => 'Mentés',
-  'Username (e.g. john)' => '',
+  'Username (e.g. john)' => 'Felhasználónév (pl. ferenc)',
 );

@@ -1,5 +1,4 @@
 <?php
 return array (
-  'Save' => 'Mentés',
-  'Space Settings' => '',
+  'Space Settings' => 'Közösség beállításai',
 );

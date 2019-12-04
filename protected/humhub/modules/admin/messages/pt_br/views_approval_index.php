@@ -17,8 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'The following list contains all pending sign-ups and invites.' => '',
-    'Actions' => 'Ações',
-    'Pending user approvals' => 'Aprovação de Usuário pendentes',
-    'The following list contains all registered users awaiting an approval.' => 'A seguinte lista contém todos os usuários registrados que aguardam uma aprovação.',
+    'Pending user approvals' => 'Aprovações de usuários pendentes',
+    'The following list contains all pending sign-ups and invites.' => 'A lista a seguir contem todos os cadastros e convites pendentes.',
+    'The following list contains all registered users awaiting an approval.' => 'A lista a seguir contém todos os usuários registrados que aguardam uma aprovação.',
 ];

@@ -8,9 +8,13 @@
 
 namespace humhub\compat;
 
-use humhub\widgets\MarkdownField;
-use humhub\widgets\MultiSelectField;
+use humhub\modules\content\widgets\richtext\RichText;
+use humhub\modules\content\widgets\richtext\RichTextField;
+use humhub\modules\file\components\FileManager;
+use humhub\modules\ui\form\widgets\DatePicker;
+use humhub\modules\ui\form\widgets\MultiSelect;
 use Yii;
+use yii\helpers\Html;
 
 /**
  * HForm - Yii1 compatible form generator
@@ -19,15 +23,24 @@ use Yii;
  */
 class HForm extends \yii\base\Component
 {
-
     const EVENT_BEFORE_VALIDATE = 'beforeValidate';
     const EVENT_AFTER_VALIDATE = 'afterValidate';
+
+    /**
+     * @since 1.2.6
+     */
+    const EVENT_AFTER_INIT = 'afterInit';
+
+    /**
+     * @since 1.2.6
+     */
+    const EVENT_BEFORE_RENDER = 'beforeRender';
 
     public $showErrorSummary;
     protected $form;
     public $primaryModel = null;
-    public $models = array();
-    public $definition = array();
+    public $models = [];
+    public $definition = [];
 
     /**
      * @var boolean manually mark form as submitted
@@ -40,12 +53,12 @@ class HForm extends \yii\base\Component
         $this->primaryModel = $primaryModel;
 
         $this->init();
+        $this->trigger(static::EVENT_AFTER_INIT);
     }
 
     public function submitted($buttonName = "")
     {
         if (Yii::$app->request->method == 'POST') {
-
             if ($buttonName == "" || isset($_POST[$buttonName])) {
                 foreach ($this->models as $model) {
                     $model->load(Yii::$app->request->post());
@@ -106,6 +119,8 @@ class HForm extends \yii\base\Component
             $this->primaryModel->save();
         }
 
+        (new FileManager(['record' => $this->primaryModel]))->attach(Yii::$app->request->post('fileList'));
+
         foreach ($this->models as $model) {
             if (!$model->save()) {
                 $hasErrors = true;
@@ -119,13 +134,15 @@ class HForm extends \yii\base\Component
     {
         $this->form = $form;
 
+        $this->trigger(static::EVENT_BEFORE_RENDER);
+
         $out = $this->renderElements($this->definition['elements']);
         $out .= $this->renderButtons($this->definition['buttons']);
 
         return $out;
     }
 
-    public function renderElements($elements, $forms = array())
+    public function renderElements($elements, $forms = [])
     {
         $output = "";
         foreach ($elements as $name => $element) {
@@ -236,15 +253,19 @@ class HForm extends \yii\base\Component
                         }
                         return $field;
                     case 'multiselectdropdown':
-                        return MultiSelectField::widget([
-                                    'form' => $this->form,
-                                    'model' => $model,
-                                    'attribute' => $name,
-                                    'items' => $definition['items'],
-                                    'options' => $definition['options']
+                        return MultiSelect::widget([
+                            'form' => $this->form,
+                            'model' => $model,
+                            'attribute' => $name,
+                            'items' => $definition['items'],
+                            'options' => $definition['options']
                         ]);
                     case 'dropdownlist':
-                        return $this->form->field($model, $name)->dropDownList($definition['items'], $options);
+                        $field = $this->form->field($model, $name)->dropDownList($definition['items'], $options);
+                        if (!empty($options['label'])) {
+                            $field->label($options['label']);
+                        }
+                        return $field;
                     case 'checkbox':
                         if (isset($options['readOnly']) && $options['readOnly']) {
                             $options['disabled'] = 'disabled';
@@ -278,26 +299,25 @@ class HForm extends \yii\base\Component
 
                         $yearRange = isset($definition['yearRange']) ? $definition['yearRange'] : (date('Y') - 100) . ":" . (date('Y') + 100);
 
-                        return $this->form->field($model, $name)->widget(\yii\jui\DatePicker::className(), [
-                                    'dateFormat' => $format,
-                                    'clientOptions' => [
-                                        'changeYear' => true,
-                                        'yearRange' => $yearRange,
-                                        'changeMonth' => true,
-                                        'disabled' => (isset($options['readOnly']) && $options['readOnly'])
-                                    ],
-                                    'options' => [
-                                        'class' => 'form-control']
+                        return $this->form->field($model, $name)->widget(DatePicker::class, [
+                            'dateFormat' => $format,
+                            'clientOptions' => [
+                                'changeYear' => true,
+                                'yearRange' => $yearRange,
+                                'changeMonth' => true,
+                                'disabled' => (isset($options['readOnly']) && $options['readOnly'])
+                            ],
+                            'options' => [
+                                'class' => 'form-control']
                         ]);
                     case 'markdown':
                         $options['id'] = $name;
-                        if (isset($options['readOnly'])) {
-                            // Markdownfield's readyonly attribute is lower case
-                            $options['readonly'] = $options['readOnly'];
-                            unset($options['readOnly']);
+                        if (isset($options['readOnly']) && $options['readOnly']) {
+                            // TODO: Once the richtext supports readonly view remove this line
+                            return RichText::output(Html::getAttributeValue($model, $name));
                         }
-                        $returnField = $this->form->field($model, $name)->widget(MarkdownField::class, $options);
-                        return $returnField;
+
+                        return $this->form->field($model, $name)->widget(RichTextField::class, $options);;
                     default:
                         return "Field Type " . $definition['type'] . " not supported by Compat HForm";
                 }
@@ -310,5 +330,4 @@ class HForm extends \yii\base\Component
 
         return $output;
     }
-
 }

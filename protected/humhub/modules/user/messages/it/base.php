@@ -23,6 +23,7 @@ return array (
   'Missing ID AuthClient Attribute from AuthClient.' => 'Attributo ID AuthClient mancante da AuthClient.',
   'Modules' => 'Moduli',
   'My Account' => 'Il mio Account',
+  'Name' => 'Nome',
   'New password' => 'Nuova password',
   'No users found.' => 'Nessun utente trovato.',
   'Notifications' => 'Notifiche',
@@ -40,6 +41,6 @@ return array (
   'You\'re not registered.' => 'Non sei registrato',
   'Your account is disabled!' => 'Il tuo account è disabilitato!',
   'Your account is not approved yet!' => 'Il tuo account non è ancora stato approvato!',
-  'Your new password must not equal your current password!' => 'La nuova password non può essere uguale a password corrente',
+  'Your new password must not be equal your current password!' => 'Non puoi scegliere una password uguale alla precedente. ',
   'or' => 'o',
 );

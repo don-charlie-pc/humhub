@@ -1,6 +1,8 @@
 <?php
 return array (
   'As owner of this space you can transfer this role to another administrator in space.' => 'Som eier av denne gruppen kan du overføre din rolle til en annen administrator i gruppen.',
+  'Remove from space' => 'Fjern fra gruppe',
+  'Show all' => 'Vis alt',
   'Space owner' => 'Gruppens eier',
   'The url contains illegal characters!' => 'Linken inneholder ugyldige tegn!',
   'Transfer ownership' => 'Overfør eierskap',

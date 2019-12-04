@@ -8,10 +8,12 @@
 
 namespace humhub\modules\content\components;
 
-use Yii;
-use yii\base\Exception;
 use humhub\components\ActiveRecord;
 use humhub\modules\content\interfaces\ContentOwner;
+use humhub\modules\content\models\Content;
+use humhub\modules\user\models\User;
+use Yii;
+use yii\base\Exception;
 
 /**
  * HActiveRecordContentAddon is the base active record for content addons.
@@ -25,6 +27,7 @@ use humhub\modules\content\interfaces\ContentOwner;
  * - updated_by
  * - updated_at
  *
+ * @property-read Content $content
  * @author Lucas Bartholemy <lucas@bartholemy.com>
  * @package humhub.components
  * @since 0.5
@@ -33,9 +36,14 @@ class ContentAddonActiveRecord extends ActiveRecord implements ContentOwner
 {
 
     /**
-     * @var boolean also update underlying contents last update stream sorting 
+     * @var boolean also update underlying contents last update stream sorting
      */
     protected $updateContentStreamSort = true;
+
+    /**
+     * @var boolean automatic following of the addon creator to the related content
+     */
+    protected $automaticContentFollowing = true;
 
     /**
      * Content object which this addon belongs to
@@ -126,7 +134,7 @@ class ContentAddonActiveRecord extends ActiveRecord implements ContentOwner
      */
     public function canRead()
     {
-        return $this->content->canRead(Yii::$app->user->id);
+        return $this->content->canView();
     }
 
     /**
@@ -171,7 +179,6 @@ class ContentAddonActiveRecord extends ActiveRecord implements ContentOwner
 
     /**
      * Validates
-     *
      * @param type $attributes
      * @param type $clearErrors
      * @return type
@@ -195,8 +202,9 @@ class ContentAddonActiveRecord extends ActiveRecord implements ContentOwner
      */
     public function afterSave($insert, $changedAttributes)
     {
-        // Auto follow the content which this addon belongs to
-        $this->content->getPolymorphicRelation()->follow($this->created_by);
+        if ($this->automaticContentFollowing) {
+            $this->content->getPolymorphicRelation()->follow($this->created_by);
+        }
 
         if ($this->updateContentStreamSort) {
             $this->getSource()->content->updateStreamSortTime();
@@ -207,7 +215,7 @@ class ContentAddonActiveRecord extends ActiveRecord implements ContentOwner
 
     public function getUser()
     {
-        return $this->hasOne(\humhub\modules\user\models\User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
 }

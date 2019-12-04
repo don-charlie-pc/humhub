@@ -9,11 +9,11 @@
 namespace humhub\components;
 
 use Yii;
-use yii\base\Event;
 use humhub\libs\WidgetCreateEvent;
 
 /**
  * @inheritdoc
+ * @property-read \humhub\modules\ui\view\components\View $view
  */
 class Widget extends \yii\base\Widget
 {
@@ -42,11 +42,11 @@ class Widget extends \yii\base\Widget
             $config['class'] = get_called_class();
         }
 
-        if(isset($config['render']) && $config['render'] === false) {
-           return;
+        if (isset($config['render']) && $config['render'] === false) {
+            return '';
         }
 
-        Event::trigger(self::className(), self::EVENT_CREATE, new WidgetCreateEvent($config));
+        \yii\base\Event::trigger(static::class, self::EVENT_CREATE, new WidgetCreateEvent($config));
 
         ob_start();
         ob_implicit_flush(false);

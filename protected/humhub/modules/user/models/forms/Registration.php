@@ -8,14 +8,14 @@
 
 namespace humhub\modules\user\models\forms;
 
+use humhub\compat\HForm;
+use humhub\modules\user\models\Group;
+use humhub\modules\user\models\GroupUser;
+use humhub\modules\user\models\Password;
+use humhub\modules\user\models\Profile;
+use humhub\modules\user\models\User;
 use Yii;
 use yii\helpers\ArrayHelper;
-use humhub\compat\HForm;
-use humhub\modules\user\models\User;
-use humhub\modules\user\models\Group;
-use humhub\modules\user\models\Profile;
-use humhub\modules\user\models\Password;
-use humhub\modules\user\models\GroupUser;
 
 /**
  * Description of Registration
@@ -99,14 +99,14 @@ class Registration extends HForm
         if ($this->enablePasswordForm) {
             $this->definition['elements']['Password'] = $this->getPasswordFormDefinition();
         }
-        $this->definition['elements']['Profile'] = array_merge(array('type' => 'form'), $this->getProfile()->getFormDefinition());
-        $this->definition['buttons'] = array(
-            'save' => array(
+        $this->definition['elements']['Profile'] = array_merge(['type' => 'form'], $this->getProfile()->getFormDefinition());
+        $this->definition['buttons'] = [
+            'save' => [
                 'type' => 'submit',
                 'class' => 'btn btn-primary',
                 'label' => Yii::t('UserModule.controllers_AuthController', 'Create account'),
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -116,11 +116,11 @@ class Registration extends HForm
      */
     protected function getUserFormDefinition()
     {
-        $form = array(
+        $form = [
             'type' => 'form',
             'title' => Yii::t('UserModule.controllers_AuthController', 'Account'),
             'elements' => [],
-        );
+        ];
 
         $form['elements']['username'] = [
             'type' => 'text',
@@ -144,21 +144,21 @@ class Registration extends HForm
      */
     protected function getPasswordFormDefinition()
     {
-        return array(
+        return [
             'type' => 'form',
-            'elements' => array(
-                'newPassword' => array(
+            'elements' => [
+                'newPassword' => [
                     'type' => 'password',
                     'class' => 'form-control',
                     'maxlength' => 255,
-                ),
-                'newPasswordConfirm' => array(
+                ],
+                'newPasswordConfirm' => [
                     'type' => 'password',
                     'class' => 'form-control',
                     'maxlength' => 255,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     protected function getGroupFormDefinition()
@@ -169,19 +169,20 @@ class Registration extends HForm
 
         if ($defaultUserGroup != "") {
             $groupFieldType = "hidden";
-        } else if (count($groupModels) == 1) {
+        } elseif (count($groupModels) == 1) {
             $groupFieldType = "hidden";
             $defaultUserGroup = $groupModels[0]->id;
         }
-        
-        if(!$defaultUserGroup && empty($groupModels)) {
+
+        if (!$defaultUserGroup && empty($groupModels)) {
             $groupFieldType = "hidden";
         }
-        
+
         return [
             'type' => 'form',
             'elements' => [
                 'group_id' => [
+                    'label' => Yii::t('UserModule.controllers_AuthController', 'Group'),
                     'type' => $groupFieldType,
                     'class' => 'form-control',
                     'items' => ArrayHelper::map($groupModels, 'id', 'name'),
@@ -243,6 +244,10 @@ class Registration extends HForm
      */
     public function register(\yii\authclient\ClientInterface $authClient = null)
     {
+        if (!$this->validate()) {
+            return false;
+        }
+
         $this->models['User']->language = Yii::$app->language;
         if ($this->enableUserApproval) {
             $this->models['User']->status = User::STATUS_NEED_APPROVAL;
@@ -254,6 +259,8 @@ class Registration extends HForm
             // Save User Profile
             $this->models['Profile']->user_id = $this->models['User']->id;
             $this->models['Profile']->save();
+
+            $this->models['User']->populateRelation('profile', $this->models['Profile']);
 
             if ($this->models['GroupUser']->validate()) {
                 $this->models['GroupUser']->user_id = $this->models['User']->id;
@@ -350,4 +357,19 @@ class Registration extends HForm
         return $this->_groupUser;
     }
 
+
+    public function getErrors()
+    {
+        $errors = [];
+
+        if ($this->models['User']->hasErrors()) {
+            $errors = array_merge($errors, $this->models['User']->getErrors());
+        }
+
+        if ($this->models['Profile']->hasErrors()) {
+            $errors = array_merge($errors, $this->models['Profile']->getErrors());
+        }
+
+        return $errors;
+    }
 }

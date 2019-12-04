@@ -8,17 +8,16 @@
 
 namespace humhub\libs;
 
+use cebe\markdown\GithubMarkdown;
 use yii\helpers\Url;
-use humhub\libs\Html;
 use humhub\modules\file\models\File;
 
-class Markdown extends \cebe\markdown\GithubMarkdown
+class Markdown extends GithubMarkdown
 {
-
     protected function handleInternalUrls($url)
     {
         // Handle urls to file
-        if (substr($url, 0, 10) === "file-guid-") {
+        if (substr($url, 0, 10) === 'file-guid-') {
             $guid = str_replace('file-guid-', '', $url);
             $file = File::findOne(['guid' => $guid]);
             if ($file !== null) {
@@ -41,14 +40,12 @@ class Markdown extends \cebe\markdown\GithubMarkdown
 
         $block['url'] = $this->handleInternalUrls($block['url']);
 
-        $internalLink = false;
         $baseUrl = Url::base(true);
-        if (substr($block['url'], 0, 1) == '/' || substr($block['url'], 0, strlen($baseUrl)) == $baseUrl) {
-            $internalLink = true;
-        }
 
-        return Html::a($this->renderAbsy($block['text']), Html::decode($block['url']), [
-            'target' => ($internalLink) ? '_self' : '_blank'
+        $url = (empty($block['url'])) ? $baseUrl : $block['url'];
+
+        return Html::a($this->renderAbsy($block['text']), Html::decode($url), [
+            'target' => '_blank'
         ]);
     }
 
@@ -72,11 +69,13 @@ class Markdown extends \cebe\markdown\GithubMarkdown
 
     protected function renderAutoUrl($block)
     {
-        return Html::a($block[1], $block[1]);
+        return Html::a($block[1], $block[1], ['target' => '_blank']);
     }
 
     /**
      * Renders a code block
+     * @param $block
+     * @return string
      */
     protected function renderCode($block)
     {
@@ -89,6 +88,8 @@ class Markdown extends \cebe\markdown\GithubMarkdown
      * "Dirty" hacked LinkTrait
      *
      * Try to allow also wiki urls with whitespaces etc.
+     * @param $markdown
+     * @return array|bool
      */
     protected function parseLinkOrImage($markdown)
     {
@@ -133,5 +134,4 @@ REGEXP;
 
         return false;
     }
-
 }

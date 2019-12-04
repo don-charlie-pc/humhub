@@ -1,6 +1,8 @@
 <?php
 return array (
   'As owner of this space you can transfer this role to another administrator in space.' => 'Como propietario de este espacio usted puede transferir este rol a otro administrador del espacio.',
+  'Remove from space' => 'Quitar del espacio',
+  'Show all' => 'Mostrar todo',
   'Space owner' => 'Dueño del espacio',
   'The url contains illegal characters!' => '¡La URL contiene caracteres no válidos!',
   'Transfer ownership' => 'Transferir propiedad',

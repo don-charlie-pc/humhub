@@ -17,15 +17,14 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'Notification Settings' => '',
     'Advanced Settings' => 'Configurações Avançadas',
     'Appearance Settings' => 'Configurações de Aparência',
     'General' => 'Geral',
     'General Settings' => 'Configurações Gerais',
     'Here you can configurate the registration behaviour and additinal user settings of your social network.' => 'Aqui você pode configurar o comportamento de registro e configurações adicionais de usuário de sua rede social.',
     'Here you can configure basic settings of your social network.' => 'Aqui você pode configurar as definições básicas de sua rede social.',
-    'LDAP' => 'LDAP',
-    'These settings refer to advanced topics of your social network.' => 'Estas definições referem-se a tópicos avançados de sua rede social.',
-    'These settings refer to the appearance of your social network.' => 'Estas definições referem-se a aparência de sua rede social.',
+    'Notification Settings' => 'Configurações de Notificação',
+    'These settings refer to advanced topics of your social network.' => 'Estas configurações referem-se a tópicos avançados de sua rede social.',
+    'These settings refer to the appearance of your social network.' => 'Estas configurações referem-se a aparência de sua rede social.',
     'User Settings' => 'Configurações de Usuário',
 ];

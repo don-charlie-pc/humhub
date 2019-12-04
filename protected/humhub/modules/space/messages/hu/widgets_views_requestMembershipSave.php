@@ -1,6 +1,6 @@
 <?php
 return array (
-  'Close' => 'Zatvori',
-  'Request workspace membership' => '',
-  'Your request was successfully submitted to the workspace administrators.' => '',
+  'Close' => 'Bezár',
+  'Request workspace membership' => 'Tagság kérelmezése a közösségben',
+  'Your request was successfully submitted to the workspace administrators.' => 'A kérelem sikeresen elküldve!',
 );

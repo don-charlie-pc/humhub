@@ -23,6 +23,7 @@ return array (
   'Missing ID AuthClient Attribute from AuthClient.' => 'Ontbrekend ID AuthClient attribuut van AuthClient.',
   'Modules' => 'Modules',
   'My Account' => 'Mijn account',
+  'Name' => 'Naam',
   'New password' => 'Nieuw wachtwoord',
   'No users found.' => 'Geen gebruikers gevonden.',
   'Notifications' => 'Meldingen',
@@ -40,6 +41,6 @@ return array (
   'You\'re not registered.' => 'U bent niet geregistreerd.',
   'Your account is disabled!' => 'Uw account is uitgeschakeld!',
   'Your account is not approved yet!' => 'Uw account is nog niet goedgekeurd!',
-  'Your new password must not equal your current password!' => 'Het nieuwe wachtwoord mag niet gelijk zijn aan het huidige wachtwoord',
+  'Your new password must not be equal your current password!' => 'Uw nieuwe wachtwoord mag niet gelijk zijn aan uw huidige wachtwoord!',
   'or' => 'of',
 );

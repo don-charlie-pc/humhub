@@ -25,7 +25,7 @@ use humhub\compat\CHtml;
         <?= $languageDropDown = $form->field($model, 'defaultLanguage')->dropDownList($allowedLanguages, ['data-ui-select2' => '']); ?>
     <?php endif; ?>
 
-    <?= $form->field($model, 'timeZone')->dropDownList(TimezoneHelper::generateList(), ['data-ui-select2' => '']); ?>
+    <?= $form->field($model, 'timeZone')->dropDownList(TimezoneHelper::generateList(true), ['data-ui-select2' => '']); ?>
 
     <?= humhub\modules\space\widgets\SpacePickerField::widget([
         'form' => $form,
@@ -34,10 +34,9 @@ use humhub\compat\CHtml;
         'selection' => $model->defaultSpaces
     ])?>
 
-    <?= $form->field($model, 'defaultStreamSort')->dropDownList($model->getDefaultStreamSortOptions()); ?>
-
     <p class="help-block"><?= Yii::t('AdminModule.views_setting_index', 'New users will automatically be added to these space(s).'); ?></p>
 
+    <?= $form->field($model, 'defaultStreamSort')->dropDownList($model->getDefaultStreamSortOptions()); ?>
 
     <strong><?= Yii::t('AdminModule.views_setting_index', 'Dashboard'); ?></strong>
     <br>

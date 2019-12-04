@@ -1,6 +1,6 @@
 <?php
 return array (
-  '<b>Nobody wrote something yet.</b><br>Make the beginning and post something...' => '<b>Nadie ha escrito nada aún.</b><br/>Marca un comienzo y escribe algo...',
+  '<b>Nobody wrote something yet.</b><br>Make the beginning and post something...' => '<b>Nadie ha escrito nada aún.</b><br />Marca un comienzo y escribe algo...',
   '<b>There are no profile posts yet!</b>' => '<b>¡No hay entradas en el perfil de usuario todavía!</b>',
   '<strong>Directory</strong> menu' => 'Menú del <strong>directorio</strong>',
   '<strong>Group</strong> members - {group}' => '<strong>Miembros</strong> del Grupo - {group}',
@@ -12,7 +12,9 @@ return array (
   '<strong>New</strong> spaces' => '<strong>Nuevos</strong> espacios',
   '<strong>Space</strong> directory' => 'Directorio de <strong>espacios</strong>',
   '<strong>Space</strong> stats' => 'Estadísticas de <strong>espacios</strong>',
+  'Access directory' => 'Acceder al directorio',
   'Average members' => 'Miembros promedio',
+  'Can access the directory section.' => 'Puede acceder a la sección del directorio.',
   'Directory' => 'Directorio',
   'Follows somebody' => 'Siguen a alguien',
   'Groups' => 'Grupos',

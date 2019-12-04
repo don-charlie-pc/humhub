@@ -2,23 +2,29 @@
 
 /**
  * @link https://www.humhub.org/
- * @copyright Copyright (c) 2015 HumHub GmbH & Co. KG
+ * @copyright Copyright (c) 2018 HumHub GmbH & Co. KG
  * @license https://www.humhub.com/licences
  */
 
 namespace humhub\modules\user\components;
 
+use humhub\modules\user\authclient\AuthClientHelpers;
+use humhub\modules\user\authclient\Password;
+use humhub\modules\user\authclient\interfaces\AutoSyncUsers;
+use humhub\modules\user\events\UserEvent;
 use Yii;
 use yii\authclient\ClientInterface;
-use humhub\modules\user\authclient\AuthClientHelpers;
+use yii\db\Expression;
 
 /**
  * Description of User
- *
+ * @property \humhub\modules\user\models\User|null $identity
  * @author luke
  */
 class User extends \yii\web\User
 {
+
+    const EVENT_BEFORE_SWITCH_IDENTITY = 'beforeSwitchIdentity';
 
     /**
      * @var ClientInterface[] the users authclients
@@ -32,32 +38,36 @@ class User extends \yii\web\User
 
     public function isAdmin()
     {
-        if ($this->isGuest)
+        if ($this->isGuest) {
             return false;
+        }
 
         return $this->getIdentity()->isSystemAdmin();
     }
 
     public function getLanguage()
     {
-        if ($this->isGuest)
-            return "";
+        if ($this->isGuest) {
+            return '';
+        }
 
         return $this->getIdentity()->language;
     }
 
     public function getTimeZone()
     {
-        if ($this->isGuest)
-            return "";
+        if ($this->isGuest) {
+            return '';
+        }
 
         return $this->getIdentity()->time_zone;
     }
 
     public function getGuid()
     {
-        if ($this->isGuest)
-            return "";
+        if ($this->isGuest) {
+            return '';
+        }
 
         return $this->getIdentity()->guid;
     }
@@ -91,8 +101,8 @@ class User extends \yii\web\User
         if ($this->permissionManager !== null) {
             return $this->permissionManager;
         }
-
         $this->permissionManager = new PermissionManager(['subject' => $this->getIdentity()]);
+
         return $this->permissionManager;
     }
 
@@ -103,7 +113,7 @@ class User extends \yii\web\User
     public function canChangePassword()
     {
         foreach ($this->getAuthClients() as $authClient) {
-            if ($authClient->className() == \humhub\modules\user\authclient\Password::className()) {
+            if ($authClient->className() == Password::class) {
                 return true;
             }
         }
@@ -131,10 +141,11 @@ class User extends \yii\web\User
     public function canDeleteAccount()
     {
         foreach ($this->getAuthClients() as $authClient) {
-            if ($authClient instanceof \humhub\modules\user\authclient\interfaces\AutoSyncUsers) {
+            if ($authClient instanceof AutoSyncUsers) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -159,6 +170,7 @@ class User extends \yii\web\User
                 return $authClient;
             }
         }
+
         return null;
     }
 
@@ -167,19 +179,28 @@ class User extends \yii\web\User
      */
     public function afterLogin($identity, $cookieBased, $duration)
     {
-        $identity->updateAttributes(['last_login' => new \yii\db\Expression('NOW()')]);
+        $identity->updateAttributes(['last_login' => new Expression('NOW()')]);
 
         parent::afterLogin($identity, $cookieBased, $duration);
     }
 
     /**
      * Checks if the system configuration allows access for guests
-     * 
+     *
      * @return boolean is guest access enabled and allowed
      */
     public static function isGuestAccessEnabled()
     {
         return (Yii::$app->getModule('user')->settings->get('auth.allowGuestAccess'));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function switchIdentity($identity, $duration = 0)
+    {
+        $this->trigger(self::EVENT_BEFORE_SWITCH_IDENTITY, new UserEvent(['user' => $identity]));
+        parent::switchIdentity($identity, $duration);
     }
 
 }

@@ -1,17 +1,30 @@
 <?php
 
-?>
-<?php echo \humhub\modules\post\widgets\Form::widget(['contentContainer' => $user]); ?>
-<?php
+use humhub\modules\friendship\widgets\FriendsPanel;
+use humhub\modules\post\widgets\Form;
+use humhub\modules\user\widgets\ProfileSidebar;
+use humhub\modules\user\widgets\StreamViewer;
+use humhub\modules\user\widgets\UserFollower;
+use humhub\modules\user\widgets\UserSpaces;
+use humhub\modules\user\widgets\UserTags;
 
-echo \humhub\modules\stream\widgets\StreamViewer::widget(array(
-    'contentContainer' => $user,
-    'streamAction' => '//user/profile/stream',
-    'messageStreamEmpty' => ($user->permissionManager->can(new \humhub\modules\post\permissions\CreatePost())) ?
-            Yii::t('UserModule.views_profile_index', '<b>Your profile stream is still empty</b><br>Get started and post something...') :
-            Yii::t('UserModule.views_profile_index', '<b>This profile stream is still empty!</b>'),
-    'messageStreamEmptyCss' => ($user->permissionManager->can(new \humhub\modules\post\permissions\CreatePost())) ?
-            'placeholder-empty-stream' :
-            '',
-));
 ?>
+
+
+<?= Form::widget(['contentContainer' => $user]); ?>
+<?= StreamViewer::widget(['contentContainer' => $user]); ?>
+
+
+<?php $this->beginBlock('sidebar'); ?>
+<?=
+ProfileSidebar::widget([
+    'user' => $user,
+    'widgets' => [
+        [UserTags::class, ['user' => $user], ['sortOrder' => 10]],
+        [UserSpaces::class, ['user' => $user], ['sortOrder' => 20]],
+        [FriendsPanel::class, ['user' => $user], ['sortOrder' => 30]],
+        [UserFollower::class, ['user' => $user], ['sortOrder' => 40]],
+    ]
+]);
+?>
+<?php $this->endBlock(); ?>

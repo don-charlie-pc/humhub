@@ -8,12 +8,14 @@
 
 namespace humhub\modules\installer\controllers;
 
-use Yii;
 use humhub\components\Controller;
+use humhub\modules\queue\driver\Sync;
 use humhub\modules\space\models\Space;
-use humhub\modules\user\models\User;
-use humhub\modules\user\models\Password;
 use humhub\modules\user\models\Group;
+use humhub\modules\user\models\Password;
+use humhub\modules\user\models\User;
+use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * ConfigController allows inital configuration of humhub.
@@ -78,6 +80,7 @@ class ConfigController extends Controller
      */
     public function actionIndex()
     {
+
         if (Yii::$app->settings->get('name') == "") {
             Yii::$app->settings->set('name', "HumHub");
         }
@@ -101,7 +104,7 @@ class ConfigController extends Controller
             return $this->redirect(Yii::$app->getModule('installer')->getNextConfigStepUrl());
         }
 
-        return $this->render('basic', array('model' => $form));
+        return $this->render('basic', ['model' => $form]);
     }
 
     /**
@@ -116,7 +119,7 @@ class ConfigController extends Controller
             return $this->redirect(Yii::$app->getModule('installer')->getNextConfigStepUrl());
         }
 
-        return $this->render('useCase', array('model' => $form));
+        return $this->render('useCase', ['model' => $form]);
     }
 
     /**
@@ -170,7 +173,7 @@ class ConfigController extends Controller
         if (Yii::$app->settings->get("useCase") == self::USECASE_OTHER) {
             return $this->redirect(Yii::$app->getModule('installer')->getNextConfigStepUrl());
         } else {
-            return $this->render('security', array('model' => $form));
+            return $this->render('security', ['model' => $form]);
         }
     }
 
@@ -210,7 +213,7 @@ class ConfigController extends Controller
         if (Yii::$app->settings->get("useCase") == self::USECASE_OTHER) {
             return $this->redirect(Yii::$app->getModule('installer')->getNextConfigStepUrl());
         } else {
-            return $this->render('modules', array('modules' => $modules));
+            return $this->render('modules', ['modules' => $modules]);
         }
     }
 
@@ -236,6 +239,8 @@ class ConfigController extends Controller
                 $admin = User::find()->where(['id' => 1])->one();
                 $adminImage = new \humhub\libs\ProfileImage($admin->guid);
                 $adminImage->setNew(Yii::getAlias("@webroot-static/resources/installer/user_male_1.jpg"));
+
+                $usersGroup = Group::findOne(['name' => 'Users']);
 
                 // Create second user
                 $userModel = new User();
@@ -263,6 +268,10 @@ class ConfigController extends Controller
                 $profileModel->country = "Virginia";
                 $profileModel->save();
 
+                if ($usersGroup !== null) {
+                    $usersGroup->addUser($userModel);
+                }
+
                 // Create third user
                 $userModel2 = new User();
                 $userModel2->scenario = 'registration';
@@ -288,6 +297,18 @@ class ConfigController extends Controller
                 $profileModel2->city = "Friedland";
                 $profileModel2->country = "Niedersachsen";
                 $profileModel2->save();
+
+                if ($usersGroup !== null) {
+                    $usersGroup->addUser($userModel2);
+                }
+
+                // Switch to Sync queue while setting up example contents
+                // This is required to avoid sending e-mail notifications for sample data
+                try {
+                    Yii::$app->set('queue', new Sync());
+                } catch (InvalidConfigException $e) {
+                    Yii::error('Could not switch queue: ' . $e->getMessage());
+                }
 
                 // Switch Identity
                 $user = User::find()->where(['id' => 1])->one();
@@ -339,7 +360,7 @@ class ConfigController extends Controller
             return $this->redirect(Yii::$app->getModule('installer')->getNextConfigStepUrl());
         }
 
-        return $this->render('sample-data', array('model' => $form));
+        return $this->render('sample-data', ['model' => $form]);
     }
 
     /**
@@ -365,54 +386,54 @@ class ConfigController extends Controller
         $profileModel->scenario = 'registration';
 
         // Build Form Definition
-        $definition = array();
-        $definition['elements'] = array();
+        $definition = [];
+        $definition['elements'] = [];
 
         // Add User Form
-        $definition['elements']['User'] = array(
+        $definition['elements']['User'] = [
             'type' => 'form',
-            'elements' => array(
-                'username' => array(
+            'elements' => [
+                'username' => [
                     'type' => 'text',
                     'class' => 'form-control',
                     'maxlength' => 25,
-                ),
-                'email' => array(
+                ],
+                'email' => [
                     'type' => 'text',
                     'class' => 'form-control',
                     'maxlength' => 100,
-                )
-            ),
-        );
+                ]
+            ],
+        ];
 
         // Add User Password Form
-        $definition['elements']['Password'] = array(
+        $definition['elements']['Password'] = [
             'type' => 'form',
-            'elements' => array(
-                'newPassword' => array(
+            'elements' => [
+                'newPassword' => [
                     'type' => 'password',
                     'class' => 'form-control',
                     'maxlength' => 255,
-                ),
-                'newPasswordConfirm' => array(
+                ],
+                'newPasswordConfirm' => [
                     'type' => 'password',
                     'class' => 'form-control',
                     'maxlength' => 255,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         // Add Profile Form
-        $definition['elements']['Profile'] = array_merge(array('type' => 'form'), $profileModel->getFormDefinition());
+        $definition['elements']['Profile'] = array_merge(['type' => 'form'], $profileModel->getFormDefinition());
 
         // Get Form Definition
-        $definition['buttons'] = array(
-            'save' => array(
+        $definition['buttons'] = [
+            'save' => [
                 'type' => 'submit',
                 'class' => 'btn btn-primary',
                 'label' => Yii::t('InstallerModule.controllers_ConfigController', 'Create Admin Account'),
-            ),
-        );
+            ],
+        ];
 
         $form = new \humhub\compat\HForm($definition);
         $form->models['User'] = $userModel;
@@ -473,7 +494,7 @@ class ConfigController extends Controller
             return $this->redirect(Yii::$app->getModule('installer')->getNextConfigStepUrl());
         }
 
-        return $this->render('admin', array('hForm' => $form));
+        return $this->render('admin', ['hForm' => $form]);
     }
 
     public function actionFinish()

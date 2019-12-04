@@ -2,7 +2,7 @@
 
 /**
  * @link https://www.humhub.org/
- * @copyright Copyright (c) 2015 HumHub GmbH & Co. KG
+ * @copyright Copyright (c) 2018 HumHub GmbH & Co. KG
  * @license https://www.humhub.com/licences
  */
 
@@ -11,16 +11,16 @@ namespace humhub\modules\like\controllers;
 use Yii;
 use humhub\modules\like\models\Like;
 use humhub\modules\user\widgets\UserListBox;
+use humhub\modules\content\components\ContentAddonController;
 
 /**
  * Like Controller
  *
  * Handles requests by the like widgets. (e.g. like, unlike, show likes)
  *
- * @package humhub.modules_core.like.controllers
  * @since 0.5
  */
-class LikeController extends \humhub\modules\content\components\ContentAddonController
+class LikeController extends ContentAddonController
 {
 
     /**
@@ -30,7 +30,7 @@ class LikeController extends \humhub\modules\content\components\ContentAddonCont
     {
         return [
             'acl' => [
-                'class' => \humhub\components\behaviors\AccessControl::className(),
+                'class' => \humhub\components\behaviors\AccessControl::class,
                 'guestAllowedActions' => ['show-likes']
             ]
         ];

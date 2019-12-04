@@ -13,6 +13,8 @@ use yii\web\HttpException;
 use humhub\components\Controller;
 use humhub\modules\content\models\Content;
 use humhub\modules\content\permissions\CreatePublicContent;
+use humhub\components\behaviors\AccessControl;
+use humhub\modules\stream\actions\Stream;
 
 /**
  * ContentController is responsible for basic content objects.
@@ -31,7 +33,7 @@ class ContentController extends Controller
     {
         return [
             'acl' => [
-                'class' => \humhub\components\behaviors\AccessControl::className(),
+                'class' => AccessControl::class,
             ]
         ];
     }
@@ -70,12 +72,17 @@ class ContentController extends Controller
 
         $model = Yii::$app->request->get('model');
 
-        //Due to backward compatibility we use the old delte mechanism in case a model parameter is provided
+        // Due to backward compatibility we use the old delete mechanism in case a model parameter is provided
         $id = (int) ($model != null) ? Yii::$app->request->get('id') : Yii::$app->request->post('id');
 
-        $contentObj = ($model != null) ? Content::Get($model, $id) : Content::findOne($id);
+        /* @var $contentObjs Content */
+        $contentObj = ($model != null) ? Content::Get($model, $id) : Content::findOne(['id' => $id]);
 
-        if (!$contentObj->canDelete()) {
+        if (!$contentObj) {
+            throw new HttpException(404);
+        }
+
+        if (!$contentObj->canEdit()) {
             throw new HttpException(400, Yii::t('ContentModule.controllers_ContentController', 'Could not delete content: Access denied!'));
         }
 
@@ -103,10 +110,10 @@ class ContentController extends Controller
         Yii::$app->response->format = 'json';
         $this->forcePostRequest();
 
-        $json = array();
+        $json = [];
         $json['success'] = false;
 
-        $id = (int) Yii::$app->request->get('id', "");
+        $id = (int) Yii::$app->request->get('id', '');
 
         $content = Content::findOne(['id' => $id]);
         if ($content !== null && $content->canArchive()) {
@@ -127,10 +134,10 @@ class ContentController extends Controller
     {
         $this->forcePostRequest();
 
-        $json = array();
+        $json = [];
         $json['success'] = false;   // default
 
-        $id = (int) Yii::$app->request->get('id', "");
+        $id = (int) Yii::$app->request->get('id', '');
 
         $content = Content::findOne(['id' => $id]);
         if ($content !== null && $content->canArchive()) {
@@ -164,7 +171,7 @@ class ContentController extends Controller
             throw new HttpException(403);
         }
 
-        return $this->asJson(\humhub\modules\stream\actions\Stream::getContentResultEntry($content, false));
+        return $this->asJson(Stream::getContentResultEntry($content, false));
     }
 
     /**
@@ -208,10 +215,10 @@ class ContentController extends Controller
     {
         $this->forcePostRequest();
 
-        $json = array();
+        $json = [];
         $json['success'] = false;
 
-        $content = Content::findOne(['id' => Yii::$app->request->get('id', "")]);
+        $content = Content::findOne(['id' => Yii::$app->request->get('id', '')]);
         if ($content !== null && $content->canPin()) {
             if ($content->countPinnedItems() < 2) {
                 $content->pin();
@@ -222,7 +229,7 @@ class ContentController extends Controller
                 $json['info'] = Yii::t('ContentModule.controllers_ContentController', "Maximum number of pinned items reached!\n\nYou can pin to top only two items at once.\nTo however pin this item, unpin another before!");
             }
         } else {
-            $json['error'] = Yii::t('ContentModule.controllers_ContentController', "Could not load requested object!");
+            $json['error'] = Yii::t('ContentModule.controllers_ContentController', 'Could not load requested object!');
         }
 
         return $this->asJson($json);
@@ -240,7 +247,7 @@ class ContentController extends Controller
         $json = [];
         $json['success'] = false;
 
-        $content = Content::findOne(['id' => Yii::$app->request->get('id', "")]);
+        $content = Content::findOne(['id' => Yii::$app->request->get('id', '')]);
         if ($content !== null && $content->canPin()) {
             $content->unpin();
             $json['success'] = true;
@@ -253,10 +260,10 @@ class ContentController extends Controller
     {
         $this->forcePostRequest();
 
-        $json = array();
-        $json['success'] = false;   // default
+        $json = [];
+        $json['success'] = false; // default
 
-        $content = Content::findOne(['id' => Yii::$app->request->get('id', "")]);
+        $content = Content::findOne(['id' => Yii::$app->request->get('id', '')]);
         if ($content !== null) {
             $switch = (Yii::$app->request->get('switch', true) == 1) ? true : false;
             $obj = $content->getPolymorphicRelation();
@@ -266,7 +273,4 @@ class ContentController extends Controller
 
         return $this->asJson($json);
     }
-
 }
-
-?>

@@ -17,11 +17,10 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'Installed' => '',
-    'No modules found!' => '',
-    'No purchased modules found!' => '',
-    'Register' => '',
-    'Search' => '',
-    'Third-party' => '',
-    'search for available modules online' => '',
+    'Installed' => 'Instalirano',
+    'No modules found!' => 'Moduli nisu pronađeni!',
+    'No purchased modules found!' => 'Nisu pronađeni kupljeni moduli!',
+    'Register' => 'Registriraj',
+    'Search' => 'Pretraži',
+    'search for available modules online' => 'traži dostupne module online',
 ];

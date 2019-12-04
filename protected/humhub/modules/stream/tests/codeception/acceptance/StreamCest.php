@@ -1,11 +1,21 @@
 <?php
+/**
+ * @link https://www.humhub.org/
+ * @copyright Copyright (c) 2018 HumHub GmbH & Co. KG
+ * @license https://www.humhub.com/licences
+ */
 
 namespace stream\acceptance;
 
+use humhub\modules\content\models\Content;
 use stream\AcceptanceTester;
 
 class StreamCest
 {
+    /**
+     * @param AcceptanceTester $I
+     * @throws \Exception
+     */
     public function testDeletePost(AcceptanceTester $I)
     {
         $I->amUser();
@@ -23,7 +33,7 @@ class StreamCest
         $I->amGoingTo('Delte my new post');
         $I->click('.preferences .dropdown-toggle', $newEntrySelector);
         $I->wait(1);
-        $I->click('Delete');
+        $I->click('Delete','[data-content-key="12"]');
 
         $I->waitForElementVisible('#globalModalConfirm', 5);
         $I->see('Confirm post deletion');
@@ -32,6 +42,10 @@ class StreamCest
         $I->seeSuccess('The content has been deleted');
     }
 
+    /**
+     * @param AcceptanceTester $I
+     * @throws \Exception
+     */
     public function testArchivePost(AcceptanceTester $I)
     {
         $I->amUser();
@@ -41,7 +55,8 @@ class StreamCest
 
         $I->createPost('This is my stream test post!');
 
-        $newEntrySelector = '[data-content-key="12"]';
+        $newEntrySelector = '[data-content-key="14"]';
+
 
         $I->waitForElementVisible($newEntrySelector);
         $I->see('This is my stream test post', '.wall-entry');
@@ -57,9 +72,9 @@ class StreamCest
         $I->dontSeeElement($newEntrySelector);
 
         $I->amGoingTo('check if my post is visible with filter include archived');
-        $I->click('Filter', '#filter');
-        $I->waitForElementVisible('#filter_entry_archived');
-        $I->click('#filter_entry_archived');
+        $I->click('Filter', '.wall-stream-filter-head');
+        $I->waitForElementVisible('[data-filter-id="entry_archived"]');
+        $I->click('[data-filter-id="entry_archived"]');
 
         $I->waitForElementVisible($newEntrySelector, 20);
         $I->expectTo('see my archived post');
@@ -86,6 +101,10 @@ class StreamCest
         $I->see('Archived', $newEntrySelector);
     }
 
+    /**
+     * @param AcceptanceTester $I
+     * @throws \Exception
+     */
     public function testPinPost(AcceptanceTester $I)
     {
         $I->amUser();
@@ -95,7 +114,7 @@ class StreamCest
 
         $I->createPost('This is my first stream test post!');
 
-        $newEntrySelector = '[data-content-key="12"]';
+        $newEntrySelector = '[data-content-key="14"]';
 
         $I->waitForElementVisible($newEntrySelector);
         $I->see('This is my first stream test post', '.wall-entry');
@@ -104,37 +123,42 @@ class StreamCest
 
         $I->createPost('This is my second stream test post!');
 
-        $newEntrySelector2 = '[data-content-key="14"]';
+        $newEntrySelector2 = '[data-content-key="16"]';
         $I->waitForElementVisible($newEntrySelector2);
         $I->expectTo('my new post beeing the latest entry');
-        $I->waitForText('This is my second stream test post',null, '.s2_streamContent div:nth-child(1)');
+        $I->waitForText('This is my second stream test post', null, '.s2_streamContent div:nth-child(1)');
 
         $I->amGoingTo('pin my first entry');
         $I->click('.preferences .dropdown-toggle', $newEntrySelector);
         $I->waitForText('Pin', 10);
         $I->click('Pin', $newEntrySelector);
 
-        $I->waitForText('This is my first stream test post!',null, '.s2_streamContent div:nth-child(1)');
+        $I->waitForText('This is my first stream test post!', null, '.s2_streamContent div:nth-child(1)');
         $I->see('Pinned', $newEntrySelector);
 
         $I->amGoingTo('unpin my first entry');
         $I->click('.preferences .dropdown-toggle', $newEntrySelector);
         $I->waitForText('Unpin', 10);
         $I->click('Unpin', $newEntrySelector);
-        $I->waitForText('This is my second stream test post!',null, '.s2_streamContent div:nth-child(1)');
+        $I->waitForText('This is my second stream test post!', null, '.s2_streamContent div:nth-child(1)');
         $I->dontSee('Pinned', $newEntrySelector);
     }
 
+    /**
+     * @param AcceptanceTester $I
+     * @throws \Exception
+     */
     public function testEditPost(AcceptanceTester $I)
     {
         $I->amUser();
         $I->amOnSpace2();
+
         $I->wantToTest('the edit post mechanism');
         $I->amGoingTo('create a new post and delete it afterwards');
 
         $I->createPost('This is my first stream test post!');
 
-        $newEntrySelector = '[data-content-key="12"]';
+        $newEntrySelector = '[data-content-key="14"]';
 
         $I->waitForElementVisible($newEntrySelector);
         $I->see('This is my first stream test post', '.wall-entry');
@@ -144,7 +168,7 @@ class StreamCest
         $I->waitForText('Edit', 10);
         $I->click('Edit', $newEntrySelector);
 
-        $I->waitForElementVisible($newEntrySelector . ' .content_edit', 20);
+        $I->waitForElementVisible($newEntrySelector . ' .content_edit');
         $I->amGoingTo('cancel my edit');
         $I->click('.preferences .dropdown-toggle', $newEntrySelector);
         $I->waitForText('Cancel Edit', 10);
@@ -167,6 +191,10 @@ class StreamCest
         $I->see('This is my edited post!', $newEntrySelector);
     }
 
+    /**
+     * @param AcceptanceTester $I
+     * @throws \Exception
+     */
     public function testEmptyStream(AcceptanceTester $I)
     {
         $I->amUser();
@@ -174,7 +202,7 @@ class StreamCest
         $I->wantToTest('the empty stream message and filter');
 
         $I->waitForText('This space is still empty!');
-        $I->dontSeeElement('#filter');
+        $I->dontSeeElement('#wall-stream-filter-nav');
 
         $I->amGoingTo('create a new post and delete it afterwards');
 
@@ -183,8 +211,8 @@ class StreamCest
         $I->wait(1);
 
         $I->amGoingTo('Delete my new post again.');
+        $I->waitForElementVisible('#wall-stream-filter-nav');
         $I->dontSee('This space is still empty!');
-        $I->seeElement('#filter');
         $I->click('.preferences .dropdown-toggle', '[data-stream-entry]:nth-of-type(1)');
         $I->wait(1);
         $I->click('Delete');
@@ -195,49 +223,66 @@ class StreamCest
 
         $I->seeSuccess('The content has been deleted');
         $I->see('This space is still empty!');
-        $I->dontSeeElement('#filter');
+        $I->dontSeeElement('#wall-stream-filter-nav');
     }
 
+    /**
+     * @param AcceptanceTester $I
+     * @throws \Exception
+     */
     public function testFilterInvolved(AcceptanceTester $I)
     {
         $I->amUser();
         $I->amOnSpace2();
-        $I->waitForElementVisible('#filter');
-        $I->click('.stream-filter', '#filter');
-        $I->waitForElementVisible('#filter_entry_userinvolved');
-        $I->click('#filter_entry_userinvolved');
+
+
+        $I->amGoingTo('filter the stream for involved posts.');
+        $I->expect('not to see any posts since I did not participate in any posts yet.');
+
+        $I->waitForElementVisible('.wall-stream-filter-head');
+        $I->click('Filter', '.wall-stream-filter-head');
+        $I->wait(1);
+        $I->waitForElementVisible('[data-filter-id="entry_userinvolved"]');
+        $I->click('[data-filter-id="entry_userinvolved"]');
         $I->waitForText('No matches with your selected filters!');
+
+        $I->amGoingTo('create a new post.');
+        $I->expectTo('see my new post in the stream after creation.');
 
         $I->createPost('Involved Post.');
         $I->wait(1);
         $I->dontSee('No matches with your selected filters!');
 
-        $I->amGoingTo('Reset filter');
-        $I->click('.stream-filter', '#filter');
-        $I->waitForElementVisible('#filter_entry_userinvolved');
-        $I->click('#filter_entry_userinvolved');
+        $I->amGoingTo('reset the filter and comment another post');
 
-        $I->waitForElementVisible('[data-content-key="10"]');
+        $I->waitForElementVisible('[data-filter-id="entry_userinvolved"]');
+        $I->click('[data-filter-id="entry_userinvolved"]');
 
-        $I->click('Comment', '[data-content-key="10"]');
-        $I->waitForElementVisible('#newCommentForm_humhubmodulespostmodelsPost_10');
-        $I->fillField('#newCommentForm_humhubmodulespostmodelsPost_10', 'My Comment');
-        $I->click('Send', '#comment_create_form_humhubmodulespostmodelsPost_10');
-        $I->waitForText('My Comment', 30, '#comment_humhubmodulespostmodelsPost_10 .comment');
+        $postSelector = '[data-content-key="13"]';
+        $I->waitForElementVisible($postSelector);
 
-        $I->click('Like', '[data-content-key="11"]');
+        $I->click('Comment', $postSelector);
+        $I->waitForElementVisible($postSelector.' .comment-container', null );
+        $I->fillField($postSelector.' .comment_create .humhub-ui-richtext', 'My Comment');
+        $I->click('Send', $postSelector.' .comment_create');
+        $I->waitForText('My Comment', null, $postSelector.' .comment');
 
-        $I->click('.stream-filter', '#filter');
-        $I->waitForElementVisible('#filter_entry_userinvolved');
-        $I->click('#filter_entry_userinvolved');
+
+        $I->amGoingTo('reactivate the involved filter.');
+        $I->expectTo('see the commented post after the stream reload.');
+        
+        $I->click('[data-filter-id="entry_userinvolved"]');
         $I->wait(1);
         $I->waitForText('Involved Post.');
 
-        $I->seeElement('[data-content-key="10"]');
-        $I->seeElement('[data-content-key="11"]');
-        $I->seeElement('[data-content-key="12"]');
+        $I->seeElement('[data-content-key="13"]');
+        $I->seeElement('[data-content-key="14"]');
     }
 
+    /**
+     * @param AcceptanceTester $I
+     * @throws \Exception
+     */
     public function testSortStream(AcceptanceTester $I)
     {
         $I->amUser();
@@ -261,7 +306,7 @@ class StreamCest
         $I->see('POST2', '.s2_streamContent > [data-stream-entry]:nth-of-type(4)');
         $I->see('POST1', '.s2_streamContent > [data-stream-entry]:nth-of-type(5)');
 
-        $post4Selector = '[data-stream-entry][data-content-key="18"]';
+        $post4Selector = '[data-stream-entry][data-content-key="20"]';
 
         $I->click('Comment', $post4Selector);
         $I->fillField($post4Selector . ' [contenteditable]', 'My Comment!');
@@ -269,9 +314,9 @@ class StreamCest
 
         $I->scrollTop();
 
-        $I->click('.stream-sorting', '#filter');
-        $I->waitForElementVisible('#sorting_u');
-        $I->click('#sorting_u');
+        $I->click('Filter', '.wall-stream-filter-head');
+        $I->waitForElementVisible('[data-filter-id="sort_update"]');
+        $I->click('[data-filter-id="sort_update"]');
         $I->wait(2);
         $I->waitForElementVisible($post4Selector);
 

@@ -8,10 +8,11 @@
 
 namespace humhub\modules\user\authclient;
 
-use Yii;
-use yii\authclient\ClientInterface;
 use humhub\modules\user\models\Auth;
 use humhub\modules\user\models\User;
+use Yii;
+use yii\authclient\ClientInterface;
+use yii\helpers\VarDumper;
 
 /**
  * AuthClientHelper provides helper functions fo auth clients
@@ -24,7 +25,7 @@ class AuthClientHelpers
 
     /**
      * Returns the user object which is linked against given authClient
-     * 
+     *
      * @param ClientInterface $authClient the authClient
      * @return User the user model or null if not found
      */
@@ -45,7 +46,7 @@ class AuthClientHelpers
 
     /**
      * Stores an authClient to an user record
-     * 
+     *
      * @param \yii\authclient\BaseClient $authClient
      * @param User $user
      */
@@ -71,8 +72,8 @@ class AuthClientHelpers
             if ($auth === null) {
                 $auth = new \humhub\modules\user\models\Auth([
                     'user_id' => $user->id,
-                    'source' => (string) $authClient->getId(),
-                    'source_id' => (string) $attributes['id'],
+                    'source' => (string)$authClient->getId(),
+                    'source_id' => (string)$attributes['id'],
                 ]);
 
                 $auth->save();
@@ -82,7 +83,7 @@ class AuthClientHelpers
 
     /**
      * Removes Authclient for a user
-     * 
+     *
      * @param \yii\authclient\BaseClient $authClient
      * @param User $user
      */
@@ -90,14 +91,14 @@ class AuthClientHelpers
     {
         Auth::deleteAll([
             'user_id' => $user->id,
-            'source' => (string) $authClient->getId()
+            'source' => (string)$authClient->getId()
         ]);
     }
 
     /**
      * Updates (or creates) a user in HumHub using AuthClients Attributes
      * This method will be called after login or by cron sync.
-     * 
+     *
      * @param \yii\authclient\BaseClient $authClient
      * @param User $user
      * @return boolean succeed
@@ -117,7 +118,7 @@ class AuthClientHelpers
             $attributes = $authClient->getUserAttributes();
             foreach ($authClient->getSyncAttributes() as $attributeName) {
                 if (isset($attributes[$attributeName])) {
-                    if (in_array($attributeName, ['email', 'username', 'authclient_id'])) {
+                    if ($user->hasAttribute($attributeName) && !in_array($attributeName, ['id', 'guid', 'status', 'contentcontainer_id', 'auth_mode'])) {
                         $user->setAttribute($attributeName, $attributes[$attributeName]);
                     } else {
                         $user->profile->setAttribute($attributeName, $attributes[$attributeName]);
@@ -130,12 +131,16 @@ class AuthClientHelpers
             }
 
             if (count($user->getDirtyAttributes()) !== 0 && !$user->save()) {
-                Yii::error('Could not update user attributes by AuthClient (UserId: ' . $user->id . ") - Error: " . print_r($user->getErrors(), 1));
+
+                Yii::warning('Could not update user (' . $user->id . '). Error: '
+                    . VarDumper::dumpAsString($user->getErrors()), 'user');
+
                 return false;
             }
 
             if (count($user->profile->getDirtyAttributes()) !== 0 && !$user->profile->save()) {
-                Yii::error('Could not update user attributes by AuthClient (UserId: ' . $user->id . ") - Error: " . print_r($user->profile->getErrors(), 1));
+                Yii::warning('Could not update user profile (' . $user->id . '). Error: '
+                    . VarDumper::dumpAsString($user->profile->getErrors()), 'user');
                 return false;
             }
         }
@@ -144,17 +149,17 @@ class AuthClientHelpers
     }
 
     /**
-     * Automatically creates user by auth client attributes
-     * 
-     * @param \yii\authclient\BaseClient $authClient
-     * @return boolean success status
+     * Populates a Registration model with the information provided by the given AuthClient
+     *
+     * @param ClientInterface $authClient
+     * @return bool|\humhub\modules\user\models\forms\Registration|null
      */
-    public static function createUser(ClientInterface $authClient)
+    public static function createRegistration(ClientInterface $authClient)
     {
         $attributes = $authClient->getUserAttributes();
 
         if (!isset($attributes['id'])) {
-            return false;
+            return null;
         }
 
         $registration = new \humhub\modules\user\models\forms\Registration();
@@ -170,7 +175,20 @@ class AuthClientHelpers
         $registration->getProfile()->setAttributes($attributes, false);
         $registration->getGroupUser()->setAttributes($attributes, false);
 
-        if ($registration->validate() && $registration->register($authClient)) {
+        return $registration;
+    }
+
+
+    /**
+     * Automatically creates user by auth client attributes
+     *
+     * @param \yii\authclient\BaseClient $authClient
+     * @return User the created user
+     */
+    public static function createUser(ClientInterface $authClient)
+    {
+        $registration = static::createRegistration($authClient);
+        if ($registration !== null && $registration->validate() && $registration->register($authClient)) {
             return $registration->getUser();
         }
 
@@ -179,7 +197,7 @@ class AuthClientHelpers
 
     /**
      * Returns all users which are using an given authclient
-     * 
+     *
      * @param ClientInterface $authClient
      * @return \yii\db\ActiveQuery
      */
@@ -200,14 +218,14 @@ class AuthClientHelpers
 
     /**
      * Returns AuthClients used by given User
-     * 
+     *
      * @param User $user
      * @return ClientInterface[] the users authclients
      */
     public static function getAuthClientsByUser(User $user)
     {
         $authClients = [];
-        
+
         foreach (Yii::$app->authClientCollection->getClients() as $client) {
             /* @var $client ClientInterface */
 
@@ -228,8 +246,8 @@ class AuthClientHelpers
     }
 
     /**
-     * Returns a list of all synchornized user attributes 
-     * 
+     * Returns a list of all synchornized user attributes
+     *
      * @param User $user
      * @return array attribute names
      */

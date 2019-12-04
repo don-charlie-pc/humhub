@@ -1,23 +1,27 @@
 <?php
-
 /**
  * @link https://www.humhub.org/
- * @copyright Copyright (c) 2015 HumHub GmbH & Co. KG
+ * @copyright Copyright (c) 2018 HumHub GmbH & Co. KG
  * @license https://www.humhub.com/licences
  */
 
 namespace humhub\modules\user\components;
 
-use Yii;
+use humhub\components\Module;
 use humhub\libs\BasePermission;
+use humhub\modules\user\models\Group;
 use humhub\modules\user\models\GroupPermission;
+use humhub\modules\user\models\User as UserModel;
+use Yii;
+use yii\base\Component;
+use yii\base\Module as BaseModule;
 
 /**
  * Description of PermissionManager
  *
  * @author luke
  */
-class PermissionManager extends \yii\base\Component
+class PermissionManager extends Component
 {
 
     /**
@@ -44,14 +48,15 @@ class PermissionManager extends \yii\base\Component
      * If $params['strict'] is set to true and a $permission array is given all given permissions
      * have to be granted otherwise (default) only one permission test has to pass.
      *
-     * @param string|string[]|BasePermission $permission
+     * @param string|array|BasePermission $permission
      * @param array $params
      * @param boolean $allowCaching
      * @return boolean
+     * @throws \yii\base\InvalidConfigException
      */
     public function can($permission, $params = [], $allowCaching = true)
     {
-        
+
         if (is_array($permission)) {
             // compatibility for old 'all' param
             $verifyAll = $this->isVerifyAll($params);
@@ -59,19 +64,19 @@ class PermissionManager extends \yii\base\Component
                 $can = $this->can($current, $params, $allowCaching);
                 if ($can && !$verifyAll) {
                     return true;
-                } else if (!$can && $verifyAll) {
+                } elseif (!$can && $verifyAll) {
                     return false;
                 }
             }
             return $verifyAll;
-        } else if ($allowCaching) {
+        } elseif ($allowCaching) {
             $permission = ($permission instanceof BasePermission) ? $permission : Yii::createObject($permission);
             $key = $permission->getId();
-            
+
             if (!isset($this->_access[$key])) {
                 $this->_access[$key] = $this->verify($permission);
             }
-            
+
             return $this->_access[$key];
         } else {
             $permission = ($permission instanceof BasePermission) ? $permission : Yii::createObject($permission);
@@ -79,14 +84,20 @@ class PermissionManager extends \yii\base\Component
         }
     }
 
+    /**
+     * Return boolean for verifyAll
+     *
+     * @param array $params
+     * @return bool
+     */
     private function isVerifyAll($params = [])
     {
-        if(isset($params['strict'])) {
+        if (isset($params['strict'])) {
             return $params['strict'];
         }
 
         //deprecated
-        if(isset($params['all'])) {
+        if (isset($params['all'])) {
             return $params['all'];
         }
 
@@ -135,6 +146,9 @@ class PermissionManager extends \yii\base\Component
      * @param string $groupId
      * @param string|BasePermission $permission either permission class or instance
      * @param string $state
+     * @throws \Exception
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\db\StaleObjectException
      */
     public function setGroupState($groupId, $permission, $state)
     {
@@ -154,7 +168,7 @@ class PermissionManager extends \yii\base\Component
         }
 
         $record->permission_id = $permission->getId();
-        $record->module_id = $permission->moduleId;
+        $record->module_id = $permission->getModuleId();
         $record->class = $permission->className();
         $record->group_id = $groupId;
         $record->state = $state;
@@ -174,7 +188,7 @@ class PermissionManager extends \yii\base\Component
     public function getGroupState($groups, BasePermission $permission, $returnDefaultState = 1)
     {
         if (is_array($groups)) {
-            $state = "";
+            $state = '';
             foreach ($groups as $group) {
                 $state = $this->getSingleGroupState($group, $permission, $returnDefaultState);
                 if ($state === BasePermission::STATE_ALLOW) {
@@ -212,7 +226,7 @@ class PermissionManager extends \yii\base\Component
             return $permission->getDefaultState($groupId);
         }
 
-        return "";
+        return '';
     }
 
     /**
@@ -220,13 +234,15 @@ class PermissionManager extends \yii\base\Component
      *
      * @param string $permissionId
      * @param string $moduleId
-     * @return BasePermission
+     * @return BasePermission|null
+     * @throws \yii\base\InvalidConfigException
      */
     public function getById($permissionId, $moduleId)
     {
         $module = Yii::$app->getModule($moduleId);
 
         foreach ($this->getModulePermissions($module) as $permission) {
+            /** @var BasePermission $permission */
             if ($permission->hasId($permissionId)) {
                 return $permission;
             }
@@ -235,19 +251,25 @@ class PermissionManager extends \yii\base\Component
         return null;
     }
 
+    /**
+     * @param $groupId
+     * @param BasePermission $permission
+     * @return array|null|\yii\db\ActiveRecord
+     */
     protected function getGroupStateRecord($groupId, BasePermission $permission)
     {
         return $this->getQuery()->andWhere([
-                    'group_id' => $groupId,
-                    'module_id' => $permission->moduleId,
-                    'permission_id' => $permission->getId()
-                ])->one();
+            'group_id' => $groupId,
+            'module_id' => $permission->getModuleId(),
+            'permission_id' => $permission->getId()
+        ])->one();
     }
 
     /**
      * Returns a list of all Permission objects
      *
      * @return array of BasePermissions
+     * @throws \yii\base\InvalidConfigException
      */
     public function getPermissions()
     {
@@ -271,16 +293,17 @@ class PermissionManager extends \yii\base\Component
     /**
      * Returns permissions provided by a module
      *
-     * @param \yii\base\Module $module
+     * @param BaseModule $module
      * @return array of BasePermissions
+     * @throws \yii\base\InvalidConfigException
      */
-    protected function getModulePermissions(\yii\base\Module $module)
+    protected function getModulePermissions(BaseModule $module)
     {
         $result = [];
-        if ($module instanceof \humhub\components\Module) {
+        if ($module instanceof Module) {
             $permisisons = $module->getPermissions();
-            if(!empty($permisisons)) {
-                foreach($permisisons as $permission) {
+            if (!empty($permisisons)) {
+                foreach ($permisisons as $permission) {
                     $result[] = is_string($permission) ? Yii::createObject($permission) : $permission;
                 }
             }
@@ -313,7 +336,10 @@ class PermissionManager extends \yii\base\Component
      * Returns Permission Array
      *
      * @param int $groupId id of the group
+     * @param bool $returnOnlyChangeable
      * @return array the permission array
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function createPermissionArray($groupId, $returnOnlyChangeable = false)
     {
@@ -324,6 +350,9 @@ class PermissionManager extends \yii\base\Component
                 continue;
             }
 
+            $defaultState = BasePermission::getLabelForState(BasePermission::STATE_DEFAULT) . ' - '
+                . BasePermission::getLabelForState($permission->getDefaultState($groupId));
+
             $permissions[] = [
                 'id' => $permission->id,
                 'title' => $permission->title,
@@ -331,7 +360,7 @@ class PermissionManager extends \yii\base\Component
                 'moduleId' => $permission->moduleId,
                 'permissionId' => $permission->id,
                 'states' => [
-                    BasePermission::STATE_DEFAULT => BasePermission::getLabelForState(BasePermission::STATE_DEFAULT) . ' - ' . BasePermission::getLabelForState($permission->getDefaultState($groupId)),
+                    BasePermission::STATE_DEFAULT => $defaultState,
                     BasePermission::STATE_DENY => BasePermission::getLabelForState(BasePermission::STATE_DENY),
                     BasePermission::STATE_ALLOW => BasePermission::getLabelForState(BasePermission::STATE_ALLOW),
                 ],
@@ -340,6 +369,28 @@ class PermissionManager extends \yii\base\Component
             ];
         }
         return $permissions;
+    }
+
+
+    /**
+     * Returns a query for users which are granted given permission
+     *
+     * @since 1.3.8
+     * @param BasePermission $permission
+     * @return ActiveQueryUser
+     */
+    public static function findUsersByPermission($permission)
+    {
+        $pm = new static;
+
+        $allowedGroupIds = [];
+        foreach (Group::find()->all() as $group) {
+            if ($pm->getGroupState($group, $permission) == BasePermission::STATE_ALLOW) {
+                $allowedGroupIds[] = $group->id;
+            }
+        }
+
+        return UserModel::find()->joinWith('groupUsers')->andWhere(['IN', 'group_user.group_id', $allowedGroupIds]);
     }
 
 }

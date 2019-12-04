@@ -17,9 +17,17 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Add:' => '',
+    'Could not find requested page.' => '',
+    'Delete' => '',
+    'Edit' => '',
     'Export' => '',
     'Invalid request method!' => '',
+    'Please type at least {count} characters' => '',
+    'Powered by {name}' => '',
     'Select Me' => '',
+    'Text could not be copied to clipboard' => '',
+    'Text has been copied to clipboard' => '',
     'Time Zone' => '',
     '<strong>Confirm</strong> Action' => '<strong>Xác nhận</strong> Hành động',
     '<strong>Latest</strong> updates' => 'Cập nhật <strong>mới nhất</strong>',
@@ -42,7 +50,6 @@ return [
     'Confirm' => 'Xác nhận',
     'Content Addon source must be instance of HActiveRecordContent or HActiveRecordContentAddon!' => 'Content Addon source must be instance of HActiveRecordContent or HActiveRecordContentAddon!',
     'Copy to clipboard' => 'Sao chép vào clipboard',
-    'Could not determine content container!' => 'Không thể xác định vùng chứa nội dung!',
     'Could not find content of addon!' => 'Không thể tìm thấy nội dung của addon!',
     'Default' => 'Mặc định',
     'Deny' => 'Từ chối',
@@ -77,7 +84,6 @@ return [
     'Show less' => 'Hiển thị rút gọn',
     'Show more' => 'Hiển thị thêm',
     'Some files could not be uploaded:' => 'Một số tệp tin không thể được upload:',
-    'Space not found!' => 'Không tìm thấy nhóm!',
     'The date has to be in the past.' => 'Ngày phải là ngày trước ngày hiện tại.',
     'The file has been deleted.' => 'Tệp tin đã bị xóa.',
     'The requested resource could not be found.' => 'Không tìm thấy tài nguyên bạn yêu cầu.',
@@ -90,6 +96,5 @@ return [
     'Unsubscribe' => 'Hủy đăng ký',
     'Upload' => 'Upload',
     'Upload file' => 'Upload tệp tin',
-    'User not found!' => 'Không tìm thấy thành viên!',
     'You are not allowed to run this action.' => 'Bạn không được phép thực thi hành động này.',
 ];

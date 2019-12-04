@@ -17,14 +17,14 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    '<strong>Modules</strong> directory' => '',
-    'Buy (%price%)' => '',
-    'Disclaimer' => '',
-    'Install' => '',
-    'Installing module...' => '',
-    'Latest compatible version:' => '',
-    'Latest version:' => '',
-    'Licence Key:' => '',
-    'More info' => '',
-    'No compatible module version found!' => '',
+    'Third-party' => '',
+    '<strong>Modules</strong> directory' => '<strong>Module</strong> mapper',
+    'Buy (%price%)' => 'Kjøp (%price%)',
+    'Install' => 'Installer',
+    'Installing module...' => 'Installere modul...',
+    'Latest compatible version:' => 'siste versjon som er kompatibel:',
+    'Latest version:' => 'Siste versjon:',
+    'Licence Key:' => 'Lisens nøkkel:',
+    'More info' => 'Mer informasjon',
+    'No compatible module version found!' => 'Ingen kompatible versjoner av modulen er funnet.',
 ];

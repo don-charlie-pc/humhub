@@ -1,13 +1,11 @@
 <?php
 return array (
-  'Add Groups...' => 'Legg til grupper',
-  'Become this user' => 'Logg inn som denne brukeren',
+  'Add Groups...' => 'Legg til grupper...',
   'Delete' => 'Slett',
-  'Disabled' => 'Deaktiver',
-  'Enabled' => 'Aktiver',
+  'Disabled' => 'Deaktivert',
+  'Enabled' => 'Aktivert',
   'Save' => 'Lagre',
   'Select Groups' => 'Velg grupper',
-  'Unapproved' => 'Avvis!',
-  'User not found!' => 'Fant ikke bruker.',
-  'You cannot delete yourself!' => 'Du kan ikke slette deg selv!',
+  'Unapproved' => 'Avvist',
+  'User not found!' => 'Fant ikke bruker!',
 );

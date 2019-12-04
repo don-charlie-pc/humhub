@@ -8,7 +8,8 @@
 
 namespace humhub\libs;
 
-use yii\base\InvalidParamException;
+use Yii;
+use yii\base\InvalidArgumentException;
 use yii\base\Exception;
 
 /**
@@ -24,7 +25,9 @@ class Helpers
      * @param string $text - Text string you will shorten
      * @param integer $length - Count of characters to show
      *
-     * */
+     *
+     * @return string
+     */
     public static function truncateText($text, $length)
     {
         $length = abs((int) $length);
@@ -33,7 +36,7 @@ class Helpers
         }
         $text = str_replace('<br />', '', $text);
 
-        return($text);
+        return trim($text);
     }
 
     public static function trimText($text, $length)
@@ -47,7 +50,7 @@ class Helpers
         }
         $text = str_replace('<br />', '', $text);
 
-        return($text);
+        return trim($text);
     }
 
     /*     *
@@ -61,8 +64,9 @@ class Helpers
 
     public static function arrayCompVal($a, $b)
     {
-        if (!is_array($a) || !is_array($b))
+        if (!is_array($a) || !is_array($b)) {
             return false;
+        }
         sort($a);
         sort($b);
 
@@ -147,12 +151,12 @@ class Helpers
      */
     public static function getBytesOfIniValue($valueString)
     {
-        if ($valueString === null || $valueString === "") {
+        if ($valueString === null || $valueString === '') {
             return 0;
         }
 
         if ($valueString === false) {
-            throw new InvalidParamException('Your configuration option of ini_get function does not exist.');
+            throw new InvalidArgumentException('Your configuration option of ini_get function does not exist.');
         }
 
         switch (substr($valueString, -1)) {
@@ -222,15 +226,18 @@ class Helpers
      */
     public static function same($a, $b)
     {
-        if (!is_string($a) || !is_string($b))
+        if (!is_string($a) || !is_string($b)) {
             return false;
+        }
         $mb = function_exists('mb_strlen');
         $length = $mb ? mb_strlen($a, '8bit') : strlen($a);
-        if ($length !== ($mb ? mb_strlen($b, '8bit') : strlen($b)))
+        if ($length !== ($mb ? mb_strlen($b, '8bit') : strlen($b))) {
             return false;
+        }
         $check = 0;
-        for ($i = 0; $i < $length; $i += 1)
+        for ($i = 0; $i < $length; $i += 1) {
             $check |= (ord($a[$i]) ^ ord($b[$i]));
+        }
 
         return $check === 0;
     }
@@ -242,7 +249,7 @@ class Helpers
      * should be configured in dynamic.php like this: 'on afterOpen' => ['humhub\libs\Helpers', 'SqlMode'],
      *
      * This is mainly required for grouped notifications.
-     * 
+     *
      * @since 1.2.1
      * @param $event
      */

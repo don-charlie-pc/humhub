@@ -12,6 +12,7 @@ use Yii;
 use humhub\components\Controller;
 use humhub\modules\activity\models\Activity;
 use humhub\components\behaviors\AccessControl;
+use yii\web\HttpException;
 
 /**
  * LinkController provides link informations about an Activity via JSON.
@@ -28,7 +29,7 @@ class LinkController extends Controller
     {
         return [
             'acl' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'guestAllowedActions' => ['info']
             ]
         ];
@@ -44,6 +45,8 @@ class LinkController extends Controller
 
         if ($activity !== null && $activity->content->canView()) {
             $this->redirect($activity->getActivityBaseClass()->getUrl());
+        } else {
+            throw new HttpException(403);
         }
     }
 
