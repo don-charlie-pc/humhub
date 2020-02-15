@@ -27,6 +27,15 @@ class Topic extends ContentTag
      */
     public $moduleId = 'topic';
 
+    public function attributeLabels()
+    {
+        return [
+            'name' => Yii::t('TopicModule.base', 'Name'),
+            'color' => Yii::t('TopicModule.base', 'Color'),
+            'sort_order' => Yii::t('TopicModule.base', 'Sort order'),
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -76,7 +85,7 @@ class Topic extends ContentTag
         $topics = is_array($topics) ? $topics : [$topics];
 
         foreach ($topics as $topic) {
-            if(strpos($topic, '_add:') === 0 && $canAdd) {
+            if(is_string($topic) && strpos($topic, '_add:') === 0 && $canAdd) {
                 $newTopic = new Topic([
                     'name' => substr($topic, strlen('_add:')),
                     'contentcontainer_id' => $content->contentcontainer_id
